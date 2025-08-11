@@ -4,7 +4,7 @@ import android.net.Uri;
 
 import com.alphawallet.app.BuildConfig;
 import com.alphawallet.app.C;
-import com.alphawallet.app.repository.WalletRepositoryType;
+import com.alphawallet.app.repository.WalletRepositoryTypeJ;
 import com.alphawallet.app.util.JsonUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -24,15 +24,15 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import timber.log.Timber;
 
-public class AlphaWalletNotificationService
+public class AlphaWalletNotificationServiceJ
 {
     private static final String BASE_API_URL = BuildConfig.NOTIFICATION_API_BASE_URL;
     public static final String SUBSCRIPTIONS_API_PATH = BASE_API_URL + "/subscriptions";
     private final OkHttpClient httpClient;
-    private final WalletRepositoryType walletRepository;
+    private final WalletRepositoryTypeJ walletRepository;
     private Disposable disposable;
 
-    public AlphaWalletNotificationService(WalletRepositoryType walletRepository)
+    public AlphaWalletNotificationServiceJ(WalletRepositoryTypeJ walletRepository)
     {
         this.walletRepository = walletRepository;
 

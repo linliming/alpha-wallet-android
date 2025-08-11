@@ -1,9 +1,7 @@
 package com.alphawallet.app.interact;
 
-import android.util.Log;
-
 import com.alphawallet.app.BuildConfig;
-import com.alphawallet.app.repository.WalletRepositoryType;
+import com.alphawallet.app.repository.WalletRepositoryTypeJ;
 import com.alphawallet.app.entity.Wallet;
 
 import io.reactivex.Single;
@@ -12,9 +10,9 @@ import timber.log.Timber;
 
 public class ExportWalletInteract {
 
-    private final WalletRepositoryType walletRepository;
+    private final WalletRepositoryTypeJ walletRepository;
 
-    public ExportWalletInteract(WalletRepositoryType walletRepository) {
+    public ExportWalletInteract(WalletRepositoryTypeJ walletRepository) {
         this.walletRepository = walletRepository;
     }
 

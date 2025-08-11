@@ -1,109 +1,139 @@
-package com.alphawallet.app.repository;
+package com.alphawallet.app.repository
 
-import android.util.Pair;
+import android.util.Pair
+import com.alphawallet.app.entity.ContractLocator
+import com.alphawallet.app.entity.ContractType
+import com.alphawallet.app.entity.ImageEntry
+import com.alphawallet.app.entity.TransferFromEventResponse
+import com.alphawallet.app.entity.Wallet
+import com.alphawallet.app.entity.nftassets.NFTAsset
+import com.alphawallet.app.entity.tokendata.TokenGroup
+import com.alphawallet.app.entity.tokendata.TokenTicker
+import com.alphawallet.app.entity.tokens.Token
+import com.alphawallet.app.entity.tokens.TokenCardMeta
+import com.alphawallet.app.entity.tokens.TokenInfo
+import com.alphawallet.app.service.AssetDefinitionService
+import com.alphawallet.token.entity.ContractAddress
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.realm.Realm
+import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
+import java.math.BigInteger
 
-import com.alphawallet.app.entity.ContractLocator;
-import com.alphawallet.app.entity.ContractType;
-import com.alphawallet.app.entity.ImageEntry;
-import com.alphawallet.app.entity.TransferFromEventResponse;
-import com.alphawallet.app.entity.Wallet;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
-import com.alphawallet.app.entity.tokendata.TokenGroup;
-import com.alphawallet.app.entity.tokendata.TokenTicker;
-import com.alphawallet.app.entity.tokens.Attestation;
-import com.alphawallet.app.entity.tokens.Token;
-import com.alphawallet.app.entity.tokens.TokenCardMeta;
-import com.alphawallet.app.entity.tokens.TokenInfo;
-import com.alphawallet.app.service.AssetDefinitionService;
-import com.alphawallet.token.entity.ContractAddress;
+interface TokenRepositoryType {
+    fun fetchActiveTokenBalance(walletAddress: String?, token: Token?): Observable<Token?>?
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
+    suspend fun updateTokenBalance(walletAddress: String?, token: Token?): BigDecimal?
 
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.realm.Realm;
+    suspend fun getTokenResponse(
+        address: String?,
+        chainId: Long,
+        method: String?
+    ): ContractLocator?
 
-public interface TokenRepositoryType
-{
-    Observable<Token> fetchActiveTokenBalance(String walletAddress, Token token);
+    suspend fun checkInterface(token: Token?, wallet: Wallet?): Token?
 
-    Single<BigDecimal> updateTokenBalance(String walletAddress, Token token);
+    fun setEnable(wallet: Wallet?, cAddr: ContractAddress?, isEnabled: Boolean)
 
-    Single<ContractLocator> getTokenResponse(String address, long chainId, String method);
+    fun setVisibilityChanged(wallet: Wallet?, cAddr: ContractAddress?)
 
-    Single<Token> checkInterface(Token tokens, Wallet wallet);
+    suspend fun update(address: String?, chainId: Long, type: ContractType?): TokenInfo?
 
-    void setEnable(Wallet wallet, ContractAddress cAddr, boolean isEnabled);
+    fun burnListenerObservable(contractAddress: String?): Observable<TransferFromEventResponse?>?
 
-    void setVisibilityChanged(Wallet wallet, ContractAddress cAddr);
+    suspend fun getEthTicker(chainId: Long): TokenTicker?
 
-    Single<TokenInfo> update(String address, long chainId, ContractType type);
+    fun getTokenTicker(token: Token?): TokenTicker?
 
-    Observable<TransferFromEventResponse> burnListenerObservable(String contractAddress);
+    suspend fun fetchLatestBlockNumber(chainId: Long): BigInteger?
 
-    Single<TokenTicker> getEthTicker(long chainId);
+    fun fetchToken(chainId: Long, walletAddress: String?, address: String?): Token?
 
-    TokenTicker getTokenTicker(Token token);
+    fun getTokenImageUrl(chainId: Long, address: String?): String?
 
-    Single<BigInteger> fetchLatestBlockNumber(long chainId);
+    suspend fun storeTokens(wallet: Wallet?, tokens: Array<Token?>?): Array<Token?>?
 
-    Token fetchToken(long chainId, String walletAddress, String address);
+    suspend fun resolveENS(chainId: Long, address: String?): String?
 
-    String getTokenImageUrl(long chainId, String address);
+    fun updateAssets(
+        wallet: String?,
+        erc721Token: Token?,
+        additions: List<BigInteger?>?,
+        removals: List<BigInteger?>?
+    )
 
-    Single<Token[]> storeTokens(Wallet wallet, Token[] tokens);
+    fun storeAsset(currentAddress: String?, token: Token?, tokenId: BigInteger?, asset: NFTAsset?)
 
-    Single<String> resolveENS(long chainId, String address);
+    fun initNFTAssets(wallet: Wallet?, token: Token?): Token?
 
-    void updateAssets(String wallet, Token erc721Token, List<BigInteger> additions, List<BigInteger> removals);
+    suspend fun determineCommonType(tokenInfo: TokenInfo?): ContractType?
 
-    void storeAsset(String currentAddress, Token token, BigInteger tokenId, NFTAsset asset);
+    suspend fun fetchIsRedeemed(token: Token?, tokenId: BigInteger?): Boolean?
 
-    Token initNFTAssets(Wallet wallet, Token token);
+    fun addImageUrl(entries: List<ImageEntry?>?)
 
-    Single<ContractType> determineCommonType(TokenInfo tokenInfo);
+    fun updateLocalAddress(walletAddress: String?)
 
-    Single<Boolean> fetchIsRedeemed(Token token, BigInteger tokenId);
+    fun deleteRealmTokens(wallet: Wallet?, tcmList: List<TokenCardMeta?>?)
 
-    void addImageUrl(List<ImageEntry> entries);
+    suspend fun fetchTokenMetas(
+        wallet: Wallet?, networkFilters: List<Long?>?,
+        svs: AssetDefinitionService?
+    ): Array<TokenCardMeta?>?
 
-    void updateLocalAddress(String walletAddress);
+    suspend fun fetchAllTokenMetas(
+        wallet: Wallet?, networkFilters: List<Long?>?,
+        searchTerm: String?
+    ): Array<TokenCardMeta?>?
 
-    void deleteRealmTokens(Wallet wallet, List<TokenCardMeta> tcmList);
+    suspend fun fetchTokensThatMayNeedUpdating(
+        walletAddress: String?,
+        networkFilters: List<Long?>?
+    ): Array<Token?>?
 
-    Single<TokenCardMeta[]> fetchTokenMetas(Wallet wallet, List<Long> networkFilters,
-                                            AssetDefinitionService svs);
+    suspend fun fetchAllTokensWithBlankName(
+        walletAddress: String?,
+        networkFilters: List<Long?>?
+    ): Array<ContractAddress?>?
 
-    Single<TokenCardMeta[]> fetchAllTokenMetas(Wallet wallet, List<Long> networkFilters,
-                                               String searchTerm);
+    fun fetchTokenMetasForUpdate(
+        wallet: Wallet?,
+        networkFilters: List<Long?>?
+    ): Array<TokenCardMeta?>?
 
-    Single<Token[]> fetchTokensThatMayNeedUpdating(String walletAddress, List<Long> networkFilters);
+    fun getRealmInstance(wallet: Wallet?): Realm?
 
-    Single<ContractAddress[]> fetchAllTokensWithBlankName(String walletAddress, List<Long> networkFilters);
+    //TODO
+    val tickerRealmInstance: Realm?
 
-    TokenCardMeta[] fetchTokenMetasForUpdate(Wallet wallet, List<Long> networkFilters);
+    suspend fun fetchChainBalance(walletAddress: String?, chainId: Long): BigDecimal?
 
-    Realm getRealmInstance(Wallet wallet);
+    suspend fun fixFullNames(wallet: Wallet?, svs: AssetDefinitionService?): Int?
 
-    Realm getTickerRealmInstance();
+    fun isEnabled(newToken: Token?): Boolean
 
-    Single<BigDecimal> fetchChainBalance(String walletAddress, long chainId);
+    suspend fun getTotalValue(
+        currentAddress: String?,
+        networkFilters: List<Long?>?
+    ): Pair<Double?, Double?>?
 
-    Single<Integer> fixFullNames(Wallet wallet, AssetDefinitionService svs);
+    suspend fun getTickerUpdateList(networkFilter: List<Long?>?): List<String?>?
 
-    boolean isEnabled(Token newToken);
+    fun getTokenGroup(chainId: Long, address: String?, type: ContractType?): TokenGroup?
 
-    Single<Pair<Double, Double>> getTotalValue(String currentAddress, List<Long> networkFilters);
+    suspend fun storeTokenInfo(wallet: Wallet?, tInfo: TokenInfo?, type: ContractType?): TokenInfo?
 
-    Single<List<String>> getTickerUpdateList(List<Long> networkFilter);
+    fun fetchAttestation(
+        chainId: Long,
+        currentAddress: String?,
+        toLowerCase: String?,
+        attnId: String?
+    ): Token?
 
-    TokenGroup getTokenGroup(long chainId, String address, ContractType type);
-
-    Single<TokenInfo> storeTokenInfo(Wallet wallet, TokenInfo tInfo, ContractType type);
-
-    Token fetchAttestation(long chainId, String currentAddress, String toLowerCase, String attnId);
-
-    List<Token> fetchAttestations(long chainId, String walletAddress, String tokenAddress);
+    fun fetchAttestations(
+        chainId: Long,
+        walletAddress: String?,
+        tokenAddress: String?
+    ): List<Token?>?
 }

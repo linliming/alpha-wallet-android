@@ -1,40 +1,43 @@
-package com.alphawallet.token.entity;
+package com.alphawallet.token.entity
 
-import com.alphawallet.token.tools.TokenDefinition;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
+import com.alphawallet.token.tools.TokenDefinition
+import java.math.BigInteger
 
 /**
  * Created by James on 10/11/2018.
  * Stormbird in Singapore
  */
+class FunctionDefinition {
+    @JvmField
+    var contract: ContractInfo? = null
 
-public class FunctionDefinition
-{
-    public ContractInfo contract;
-    public String method;
-    public TokenDefinition.Syntax syntax;
-    public As as;
-    public List<MethodArg> parameters = new ArrayList<>();
+    @JvmField
+    var method: String? = null
+    var syntax: TokenDefinition.Syntax? = null
 
-    public String result;
-    public long resultTime = 0;
-    public BigInteger tokenId;
-    public EthereumTransaction tx;
-    public String namedTypeReturn;
+    @JvmField
+    var asDefin: As? = null
 
-    public int getTokenRequirement()
-    {
-        int count = 0;
-        for (MethodArg arg : parameters)
-        {
-            if (arg.isTokenId()) count++;
+    @JvmField
+    var parameters: MutableList<MethodArg> = ArrayList()
+
+    var result: String? = null
+    var resultTime: Long = 0
+    var tokenId: BigInteger? = null
+
+    @JvmField
+    var eTransaction: EthereumTransaction? = null
+    var namedTypeReturn: String? = null
+
+    val tokenRequirement: Int
+        get() {
+            var count = 0
+            for (arg in parameters) {
+                if (arg.isTokenId) count++
+            }
+
+            if (count == 0) count = 1
+
+            return count
         }
-
-        if (count == 0) count = 1;
-
-        return count;
-    }
 }

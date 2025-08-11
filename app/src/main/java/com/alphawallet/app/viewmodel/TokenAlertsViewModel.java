@@ -1,20 +1,12 @@
 package com.alphawallet.app.viewmodel;
 
-import android.app.Activity;
-import android.content.Intent;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.alphawallet.app.C;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.repository.PreferenceRepositoryType;
 import com.alphawallet.app.service.TickerService;
 import com.alphawallet.app.service.TokensService;
-import com.alphawallet.app.ui.SetPriceAlertActivity;
 import com.alphawallet.app.ui.widget.entity.PriceAlert;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

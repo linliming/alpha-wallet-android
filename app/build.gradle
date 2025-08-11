@@ -9,6 +9,7 @@ plugins {
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.worker8.android_lint_reporter'
 apply plugin: 'io.gitlab.arturbosch.detekt'
@@ -160,11 +161,15 @@ android {
         targetCompatibility JavaVersion.VERSION_21
         sourceCompatibility JavaVersion.VERSION_21
     }
-    externalNativeBuild {
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
-        }
+    
+    kotlinOptions {
+        jvmTarget = '21'
     }
+//    externalNativeBuild {
+//        cmake {
+//            path "src/main/cpp/CMakeLists.txt"
+//        }
+//    }
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests {
@@ -215,6 +220,15 @@ tasks.register("jacocoAndroidUnitTestReport") {
 }
 
 dependencies {
+    // Kotlin 协程
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx3:1.7.3"
+    
+    // 架构组件
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.7.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
     implementation project(':lib')
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -260,6 +274,7 @@ dependencies {
     // dagger-hilt
     implementation libs.hilt.android
     implementation libs.annotations
+    implementation libs.baselibrary
     annotationProcessor libs.hilt.compiler
 
     // WebKit - for WebView Dark Mode (NB Can't be upgraded from 1.7.0 until migration to Gradle 8)

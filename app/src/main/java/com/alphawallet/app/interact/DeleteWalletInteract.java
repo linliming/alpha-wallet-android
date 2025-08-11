@@ -1,6 +1,6 @@
 package com.alphawallet.app.interact;
 
-import com.alphawallet.app.repository.WalletRepositoryType;
+import com.alphawallet.app.repository.WalletRepositoryTypeJ;
 import com.alphawallet.app.entity.Wallet;
 
 import io.reactivex.Single;
@@ -11,9 +11,9 @@ import io.reactivex.schedulers.Schedulers;
  * Delete and fetchTokens wallets
  */
 public class DeleteWalletInteract {
-	private final WalletRepositoryType walletRepository;
+	private final WalletRepositoryTypeJ walletRepository;
 
-	public DeleteWalletInteract(WalletRepositoryType walletRepository) {
+	public DeleteWalletInteract(WalletRepositoryTypeJ walletRepository) {
 		this.walletRepository = walletRepository;
 	}
 

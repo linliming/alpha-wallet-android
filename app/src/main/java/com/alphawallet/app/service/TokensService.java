@@ -1,7 +1,6 @@
 package com.alphawallet.app.service;
 
 import static com.alphawallet.app.repository.TokensRealmSource.databaseKey;
-import static com.alphawallet.ethereum.EthereumNetworkBase.KLAYTN_ID;
 import static com.alphawallet.ethereum.EthereumNetworkBase.MAINNET_ID;
 
 import android.text.TextUtils;
@@ -21,12 +20,12 @@ import com.alphawallet.app.entity.NetworkInfo;
 import com.alphawallet.app.entity.ServiceSyncCallback;
 import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.entity.nftassets.NFTAsset;
+import com.alphawallet.app.entity.okx.OkProtocolType;
+import com.alphawallet.app.entity.okx.OkToken;
 import com.alphawallet.app.entity.okx.OkTokenCheck;
 import com.alphawallet.app.entity.tokendata.TokenGroup;
 import com.alphawallet.app.entity.tokendata.TokenTicker;
 import com.alphawallet.app.entity.tokendata.TokenUpdateType;
-import com.alphawallet.app.entity.okx.OkProtocolType;
-import com.alphawallet.app.entity.okx.OkToken;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.entity.tokens.TokenCardMeta;
 import com.alphawallet.app.entity.tokens.TokenFactory;
@@ -53,10 +52,10 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
@@ -1221,7 +1220,7 @@ public class TokensService
 
     public Realm getTickerRealmInstance()
     {
-        return tokenRepository.getTickerRealmInstance();
+        return tokenRepository.tickerRealmInstance;
     }
 
     public void walletInFocus()

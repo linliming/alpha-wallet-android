@@ -1031,7 +1031,7 @@
     <string name="use_hardware_card">Use Hardware Card</string>
     <string name="unsupported_network">Unsupported Network (Chain ID: %s)</string>
     <string name="error_eip712_unsupported_network">You were requested to sign a message for an unsupported chain. (ID: %s)</string>
-    <string name="error_eip712_incompatible_network">You were requested to sign a message for the %1s chain. You are currently on the %2s chain.</string>
+    <string name="error_eip712_incompatible_network" formatted="false">You were requested to sign a message for the %1s chain. You are currently on the %2s chain.</string>
     <string name="error_eip712_wc2_disabled_network">You were requested to sign a message for the %1s chain. Please enable this chain for your WalletConnect session.</string>
     <string name="action_view_session">View Session</string>
     <string name="error_walletconnect_session_request_unsupported_network">Unable to handle session request from an unsupported chain. (ID: %s)</string>
@@ -1050,8 +1050,8 @@
     <string name="action_proceed">Proceed</string>
     <string name="setting_title_notification_incoming_tokens">Incoming Tokens</string>
     <string name="setting_description_notification_incoming_tokens">Show notifications when tokens are received by your active wallet.</string>
-    <string name="notification_message_incoming_token_with_recipient">Wallet %1s has received %2s from %3s. Tap here to view transaction details.</string>
-    <string name="notification_message_incoming_token">Wallet %1s has received %2s. Tap here to view transaction details.</string>
+    <string name="notification_message_incoming_token_with_recipient" formatted="false">Wallet %1s has received %2s from %3s. Tap here to view transaction details.</string>
+    <string name="notification_message_incoming_token" formatted="false">Wallet %1s has received %2s. Tap here to view transaction details.</string>
     <string name="btn_ok_request_post_notifications_permission">I want to receive notifications</string>
     <string name="btn_skip">Skip for now</string>
     <string name="body_request_post_notifications_permission">While AlphaWallet is in the background, it can send you notifications for various events, like when your wallet receives tokens.</string>

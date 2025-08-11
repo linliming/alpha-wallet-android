@@ -135,9 +135,9 @@ public class TransferHolder extends BinderViewHolder<TokenTransferData> implemen
         }
 
         TokenDefinition td = assetDefinition.getAssetDefinition(data.chainId, data.tokenAddress);
-        if (td != null && td.getActivityCards().containsKey(data.eventName))
+        if (td != null && td.activityCards.containsKey(data.eventName))
         {
-            TSTokenView view = td.getActivityCards().get(data.eventName).getView(ASSET_SUMMARY_VIEW_NAME);
+            TSTokenView view = td.activityCards.get(data.eventName).getView(ASSET_SUMMARY_VIEW_NAME);
             if (view != null) itemView = view.getTokenView();
         }
 

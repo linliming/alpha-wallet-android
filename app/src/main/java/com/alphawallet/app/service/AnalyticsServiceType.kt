@@ -1,18 +1,20 @@
-package com.alphawallet.app.service;
+package com.alphawallet.app.service
 
-import com.alphawallet.app.entity.ServiceErrorException;
+import com.alphawallet.app.entity.ServiceErrorException
 
-public interface AnalyticsServiceType<T>
-{
-    void increment(String property);
+interface AnalyticsServiceType<T> {
+    fun increment(property: String?)
 
-    void track(String eventName);
+    fun track(eventName: String?)
 
-    void track(String eventName, T event);
+    fun track(
+        eventName: String?,
+        event: T,
+    )
 
-    void flush();
+    fun flush()
 
-    void identify(String uuid);
+    fun identify(uuid: String?)
 
-    void recordException(ServiceErrorException e);
+    fun recordException(e: ServiceErrorException?)
 }

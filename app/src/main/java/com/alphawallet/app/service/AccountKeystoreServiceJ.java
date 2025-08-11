@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
-public interface AccountKeystoreService {
+public interface AccountKeystoreServiceJ{
 	/**
 	 * Create account in keystore
 	 * @param password account password

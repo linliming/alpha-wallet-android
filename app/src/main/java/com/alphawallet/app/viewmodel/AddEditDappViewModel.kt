@@ -1,17 +1,17 @@
-package com.alphawallet.app.viewmodel;
+package com.alphawallet.app.viewmodel
 
-import com.alphawallet.app.service.AnalyticsServiceType;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.lifecycle.HiltViewModel;
+import com.alphawallet.app.entity.AnalyticsProperties
+import com.alphawallet.app.service.AnalyticsServiceType
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 @HiltViewModel
-public class AddEditDappViewModel extends BaseViewModel
-{
+class AddEditDappViewModel
     @Inject
-    AddEditDappViewModel(AnalyticsServiceType analyticsService)
-    {
-        setAnalyticsService(analyticsService);
+    internal constructor(
+        analyticsService: AnalyticsServiceType<AnalyticsProperties>?,
+    ) : BaseViewModel() {
+        init {
+            setAnalyticsService(analyticsService)
+        }
     }
-}

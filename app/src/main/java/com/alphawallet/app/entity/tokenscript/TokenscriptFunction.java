@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.alphawallet.app.entity.UpdateType;
 import com.alphawallet.app.entity.tokens.Token;
-import com.alphawallet.app.repository.TokenRepository;
 import com.alphawallet.app.util.BalanceUtils;
 import com.alphawallet.app.util.Utils;
 import com.alphawallet.token.entity.As;
@@ -131,6 +130,7 @@ import org.web3j.abi.datatypes.generated.Uint96;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.EthFilter;
+import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.EthCall;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.Log;
@@ -153,7 +153,8 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by James on 13/06/2019.
+ * Created by James on 13/06/2019.convertInputValue
+ * script
  * Stormbird in Sydney
  */
 public abstract class TokenscriptFunction
@@ -549,7 +550,7 @@ public abstract class TokenscriptFunction
                 valueNotFound = true;
             }
         }
-        switch (function.as)
+        switch (function.asDefin)
         {
             case UTF8:
                 returnTypes.add(new TypeReference<Utf8String>() {});
@@ -565,6 +566,7 @@ public abstract class TokenscriptFunction
                 break;
             case Mapping:
             case Boolean:
+                break;
             default:
                 returnTypes.add(new TypeReference<Bytes32>() {});
                 break;
@@ -743,7 +745,7 @@ public abstract class TokenscriptFunction
                 val = new BigInteger(transactionResult.result);
             }
         }
-        else if (attr.syntax == TokenDefinition.Syntax.NumericString && attr.as != As.Address)
+        else if (attr.syntax == TokenDefinition.Syntax.NumericString && attr.asValue != As.Address)
         {
             if (transactionResult.result == null)
             {
@@ -775,7 +777,7 @@ public abstract class TokenscriptFunction
      * @return
      */
     public Single<TransactionResult> fetchResultFromEthereum(Token token, ContractAddress contractAddress, Attribute attr,
-                                                                 BigInteger tokenId, TokenDefinition definition, AttributeInterface attrIf)
+                                                             BigInteger tokenId, TokenDefinition definition, AttributeInterface attrIf)
     {
         return Single.fromCallable(() -> {
             TransactionResult transactionResult = new TransactionResult(contractAddress.chainId, contractAddress.address, tokenId, attr);
@@ -790,7 +792,7 @@ public abstract class TokenscriptFunction
             else
             {
                 //now push the transaction
-                result = callSmartContractFunction(TokenRepository.getWeb3jService(contractAddress.chainId), transaction, contractAddress.address, token.getWallet());
+                result = callSmartContractFunction(getWeb3jService(contractAddress.chainId), transaction, contractAddress.address, token.getWallet());
             }
 
             transactionResult.result = handleTransactionResult(transactionResult, transaction, result, attr, System.currentTimeMillis());
@@ -800,7 +802,7 @@ public abstract class TokenscriptFunction
 
     public String callSmartContract(long chainId, String contractAddress, Function function)
     {
-        return callSmartContractFunction(TokenRepository.getWeb3jService(chainId), function, contractAddress, ZERO_ADDRESS);
+        return callSmartContractFunction(getWeb3jService(chainId), function, contractAddress, ZERO_ADDRESS);
     }
 
     private String callSmartContractFunction(Web3j web3j,
@@ -810,7 +812,7 @@ public abstract class TokenscriptFunction
 
         try
         {
-            org.web3j.protocol.core.methods.request.Transaction transaction
+           Transaction transaction
                     = createEthCallTransaction(walletAddr, contractAddress, encodedFunction);
             EthCall response = web3j.ethCall(transaction, DefaultBlockParameterName.LATEST).send();
 
@@ -1069,7 +1071,7 @@ public abstract class TokenscriptFunction
         try
         {
             byte[] inputBytes;
-            switch (attr.as)
+            switch (attr.asValue)
             {
                 //UTF8, Unsigned, Signed, Mapping, Boolean, UnsignedInput, TokenId
                 case Unsigned:
@@ -1087,7 +1089,7 @@ public abstract class TokenscriptFunction
                     inputBytes = TokenscriptFunction.convertArgToBytes(valueFromInput);
                     if (inputBytes.length <= 32)
                     {
-                        BigInteger val = new BigInteger(1, inputBytes).and(attr.bitmask).shiftRight(attr.bitshift);
+                        BigInteger val = new BigInteger(1, inputBytes).and(attr.getBitmask()).shiftRight(attr.bitshift);
                         convertedValue = val.toString(16);
                     }
                     else

@@ -287,6 +287,8 @@ public class FunctionButtonBar extends LinearLayout implements AdapterView.OnIte
         }
     }
 
+
+
     private void handleStandardFunctionClick(ItemClick action)
     {
         if (action.buttonId == R.string.action_sell)
@@ -322,11 +324,11 @@ public class FunctionButtonBar extends LinearLayout implements AdapterView.OnIte
     {
         if (functions != null && functions.containsKey(function.buttonText))
         {
-            TSAction action = functions.get(function.buttonText);
+            TSAction actions = functions.get(function.buttonText);
             //first check for availability
-            if (!TextUtils.isEmpty(action.exclude))
+            if (!TextUtils.isEmpty(actions.exclude))
             {
-                String denialMessage = assetService.checkFunctionDenied(token, function.buttonText, selection);
+                String denialMessage = (String) assetService.checkFunctionDenied(token, function.buttonText, selection);
                 if (!TextUtils.isEmpty(denialMessage))
                 {
                     callStandardFunctions.handleFunctionDenied(denialMessage);
@@ -335,9 +337,9 @@ public class FunctionButtonBar extends LinearLayout implements AdapterView.OnIte
             }
 
             //ensure we have sufficient tokens for selection
-            if (!hasCorrectTokens(action))
+            if (!hasCorrectTokens(actions))
             {
-                callStandardFunctions.displayTokenSelectionError(action);
+                callStandardFunctions.displayTokenSelectionError(actions);
             }
             else
             {
@@ -346,6 +348,8 @@ public class FunctionButtonBar extends LinearLayout implements AdapterView.OnIte
             }
         }
     }
+
+
 
     private boolean isSelectionValid(int buttonId)
     {

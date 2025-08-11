@@ -4,20 +4,11 @@ import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.service.AccountKeystoreService;
 import com.alphawallet.app.service.KeyService;
 
-import org.web3j.protocol.core.DefaultBlockParameterName;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-
 import io.reactivex.Completable;
 import io.reactivex.Single;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 
-import static com.alphawallet.app.repository.TokenRepository.getWeb3jService;
-
-public class WalletRepository implements WalletRepositoryType
+public class WalletRepositoryJ implements WalletRepositoryTypeJ
 {
 	private final PreferenceRepositoryType preferenceRepositoryType;
 	private final AccountKeystoreService accountKeystoreService;
@@ -25,7 +16,7 @@ public class WalletRepository implements WalletRepositoryType
 	private final WalletDataRealmSource walletDataRealmSource;
 	private final KeyService keyService;
 
-	public WalletRepository(PreferenceRepositoryType preferenceRepositoryType, AccountKeystoreService accountKeystoreService, EthereumNetworkRepositoryType networkRepository, WalletDataRealmSource walletDataRealmSource, KeyService keyService)
+	public WalletRepositoryJ(PreferenceRepositoryType preferenceRepositoryType, AccountKeystoreService accountKeystoreService, EthereumNetworkRepositoryType networkRepository, WalletDataRealmSource walletDataRealmSource, KeyService keyService)
 	{
 		this.preferenceRepositoryType = preferenceRepositoryType;
 		this.accountKeystoreService = accountKeystoreService;

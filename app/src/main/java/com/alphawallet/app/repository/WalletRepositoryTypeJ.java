@@ -6,7 +6,7 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.realm.Realm;
 
-public interface WalletRepositoryType {
+public interface WalletRepositoryTypeJ {
     Single<Wallet[]> fetchWallets();
 
     Single<Wallet> findWallet(String address);

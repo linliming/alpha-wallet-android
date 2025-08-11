@@ -26,10 +26,20 @@ buildscript {
 
 plugins {
     alias(libs.plugins.androidApplication) apply false
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 configurations.configureEach {
     resolutionStrategy {
         force 'com.google.firebase:firebase-analytics:16.5.0'
     }
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+kotlin {
+    jvmToolchain(8)
 }

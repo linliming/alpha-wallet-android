@@ -1,6 +1,6 @@
 package com.alphawallet.app.interact;
 
-import com.alphawallet.app.repository.WalletRepositoryType;
+import com.alphawallet.app.repository.WalletRepositoryTypeJ;
 import com.alphawallet.app.entity.Wallet;
 
 import io.reactivex.Completable;
@@ -8,9 +8,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class SetDefaultWalletInteract {
 
-	private final WalletRepositoryType accountRepository;
+	private final WalletRepositoryTypeJ accountRepository;
 
-	public SetDefaultWalletInteract(WalletRepositoryType walletRepositoryType) {
+	public SetDefaultWalletInteract(WalletRepositoryTypeJ walletRepositoryType) {
 		this.accountRepository = walletRepositoryType;
 	}
 

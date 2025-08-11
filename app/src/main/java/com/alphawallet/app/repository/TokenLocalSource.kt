@@ -1,99 +1,377 @@
-package com.alphawallet.app.repository;
+package com.alphawallet.app.repository
 
-import android.util.Pair;
+import android.util.Pair
+import com.alphawallet.app.entity.ContractType
+import com.alphawallet.app.entity.ImageEntry
+import com.alphawallet.app.entity.Wallet
+import com.alphawallet.app.entity.nftassets.NFTAsset
+import com.alphawallet.app.entity.tokendata.TokenGroup
+import com.alphawallet.app.entity.tokendata.TokenTicker
+import com.alphawallet.app.entity.tokens.Token
+import com.alphawallet.app.entity.tokens.TokenCardMeta
+import com.alphawallet.app.entity.tokens.TokenInfo
+import com.alphawallet.app.service.AssetDefinitionService
+import com.alphawallet.token.entity.ContractAddress
+import io.realm.Realm
+import java.math.BigDecimal
+import java.math.BigInteger
 
-import com.alphawallet.app.entity.ContractType;
-import com.alphawallet.app.entity.ImageEntry;
-import com.alphawallet.app.entity.Wallet;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
-import com.alphawallet.app.entity.tokendata.TokenGroup;
-import com.alphawallet.app.entity.tokendata.TokenTicker;
-import com.alphawallet.app.entity.tokens.Attestation;
-import com.alphawallet.app.entity.tokens.Token;
-import com.alphawallet.app.entity.tokens.TokenCardMeta;
-import com.alphawallet.app.entity.tokens.TokenInfo;
-import com.alphawallet.app.service.AssetDefinitionService;
-import com.alphawallet.token.entity.ContractAddress;
+/**
+ * TokenLocalSource - 代币本地数据源接口
+ *
+ * 定义代币数据本地存储的核心操作接口，包括：
+ * 1. 代币数据的增删改查操作
+ * 2. NFT资产管理
+ * 3. 代币价格信息管理
+ * 4. 认证代币处理
+ * 5. 代币元数据管理
+ *
+ * 使用Kotlin协程替代RxJava，提供更好的异步处理性能。
+ *
+ * @author AlphaWallet Team
+ * @since 2024
+ */
+interface TokenLocalSource {
+    /**
+     * 保存单个代币
+     *
+     * @param wallet 钱包信息
+     * @param token 代币对象
+     * @return 保存后的代币对象
+     */
+    suspend fun saveToken(wallet: Wallet?, token: Token?): Token?
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
+    /**
+     * 保存代币数组
+     *
+     * @param wallet 钱包信息
+     * @param items 代币数组
+     * @return 保存后的代币数组
+     */
+    suspend fun saveTokens(wallet: Wallet?, items: Array<Token?>?): Array<Token?>?
 
-import io.reactivex.Single;
-import io.realm.Realm;
+    /**
+     * 更新代币余额
+     *
+     * @param wallet 钱包信息
+     * @param token 代币对象
+     * @param balance 余额
+     * @param balanceArray 余额数组
+     * @return 更新是否成功
+     */
+    fun updateTokenBalance(
+        wallet: Wallet?,
+        token: Token?,
+        balance: BigDecimal?,
+        balanceArray: List<BigInteger?>?
+    ): Boolean
 
-public interface TokenLocalSource
-{
-    Single<Token> saveToken(Wallet wallet, Token token);
+    /**
+     * 获取代币
+     *
+     * @param chainId 链ID
+     * @param wallet 钱包信息
+     * @param address 代币地址
+     * @return 代币对象
+     */
+    fun fetchToken(chainId: Long, wallet: Wallet?, address: String?): Token?
 
-    Single<Token[]> saveTokens(Wallet wallet, Token[] items);
+    /**
+     * 设置代币启用状态
+     *
+     * @param wallet 钱包信息
+     * @param cAddr 合约地址
+     * @param isEnabled 是否启用
+     */
+    fun setEnable(wallet: Wallet?, cAddr: ContractAddress?, isEnabled: Boolean)
 
-    boolean updateTokenBalance(Wallet wallet, Token token, BigDecimal balance, List<BigInteger> balanceArray);
+    /**
+     * 获取代币图片URL
+     *
+     * @param chainId 链ID
+     * @param address 代币地址
+     * @return 图片URL
+     */
+    fun getTokenImageUrl(chainId: Long, address: String?): String?
 
-    Token fetchToken(long chainId, Wallet wallet, String address);
+    /**
+     * 删除Realm代币
+     *
+     * @param wallet 钱包信息
+     * @param tcmList 代币卡片元数据列表
+     */
+    fun deleteRealmTokens(wallet: Wallet?, tcmList: List<TokenCardMeta?>?)
 
-    void setEnable(Wallet wallet, ContractAddress cAddr, boolean isEnabled);
+    /**
+     * 存储代币URL
+     *
+     * @param entries 图片条目列表
+     */
+    fun storeTokenUrl(entries: List<ImageEntry?>?)
 
-    String getTokenImageUrl(long chainId, String address);
+    /**
+     * 初始化NFT资产
+     *
+     * @param wallet 钱包信息
+     * @param tokens 代币对象
+     * @return 初始化后的代币对象
+     */
+    fun initNFTAssets(wallet: Wallet?, tokens: Token?): Token?
 
-    void deleteRealmTokens(Wallet wallet, List<TokenCardMeta> tcmList);
+    /**
+     * 获取代币元数据
+     *
+     * @param wallet 钱包信息
+     * @param networkFilters 网络过滤器
+     * @param svs 资产定义服务
+     * @return 代币卡片元数据数组
+     */
+    suspend fun fetchTokenMetas(
+        wallet: Wallet?, networkFilters: List<Long?>?,
+        svs: AssetDefinitionService?
+    ): Array<TokenCardMeta?>?
 
-    void storeTokenUrl(List<ImageEntry> entries);
+    /**
+     * 获取所有代币元数据
+     *
+     * @param wallet 钱包信息
+     * @param networkFilters 网络过滤器
+     * @param searchTerm 搜索词
+     * @return 代币卡片元数据数组
+     */
+    suspend fun fetchAllTokenMetas(
+        wallet: Wallet?, networkFilters: List<Long?>?,
+        searchTerm: String?
+    ): Array<TokenCardMeta?>?
 
-    Token initNFTAssets(Wallet wallet, Token tokens);
+    /**
+     * 获取需要更新的代币元数据
+     *
+     * @param wallet 钱包信息
+     * @param networkFilters 网络过滤器
+     * @return 代币卡片元数据数组
+     */
+    fun fetchTokenMetasForUpdate(
+        wallet: Wallet?,
+        networkFilters: List<Long?>?
+    ): Array<TokenCardMeta?>?
 
-    Single<TokenCardMeta[]> fetchTokenMetas(Wallet wallet, List<Long> networkFilters,
-                                            AssetDefinitionService svs);
+    /**
+     * 获取所有有名称问题的代币
+     *
+     * @param walletAddress 钱包地址
+     * @param networkFilters 网络过滤器
+     * @return 代币数组
+     */
+    suspend fun fetchAllTokensWithNameIssue(
+        walletAddress: String?,
+        networkFilters: List<Long?>?
+    ): Array<Token?>?
 
-    Single<TokenCardMeta[]> fetchAllTokenMetas(Wallet wallet, List<Long> networkFilters,
-                                               String seachTerm);
+    /**
+     * 获取所有名称空白的代币
+     *
+     * @param walletAddress 钱包地址
+     * @param networkFilters 网络过滤器
+     * @return 合约地址数组
+     */
+    suspend fun fetchAllTokensWithBlankName(
+        walletAddress: String?,
+        networkFilters: List<Long?>?
+    ): Array<ContractAddress?>?
 
-    TokenCardMeta[] fetchTokenMetasForUpdate(Wallet wallet, List<Long> networkFilters);
+    /**
+     * 修复完整名称
+     *
+     * @param wallet 钱包信息
+     * @param svs 资产定义服务
+     * @return 修复的数量
+     */
+    suspend fun fixFullNames(wallet: Wallet?, svs: AssetDefinitionService?): Int?
 
-    Single<Token[]> fetchAllTokensWithNameIssue(String walletAddress, List<Long> networkFilters);
+    /**
+     * 更新以太坊价格信息
+     *
+     * @param ethTickers 以太坊价格映射
+     */
+    fun updateEthTickers(ethTickers: Map<Long?, TokenTicker?>?)
 
-    Single<ContractAddress[]> fetchAllTokensWithBlankName(String walletAddress, List<Long> networkFilters);
+    /**
+     * 更新ERC20代币价格信息
+     *
+     * @param chainId 链ID
+     * @param erc20Tickers ERC20代币价格映射
+     */
+    fun updateERC20Tickers(chainId: Long, erc20Tickers: Map<String?, TokenTicker?>?)
 
-    Single<Integer> fixFullNames(Wallet wallet, AssetDefinitionService svs);
+    /**
+     * 移除过期的价格信息
+     */
+    fun removeOutdatedTickers()
 
-    void updateEthTickers(Map<Long, TokenTicker> ethTickers);
+    /**
+     * 获取Realm实例
+     *
+     * @param wallet 钱包信息
+     * @return Realm实例
+     */
+    fun getRealmInstance(wallet: Wallet?): Realm?
 
-    void updateERC20Tickers(long chainId, Map<String, TokenTicker> erc20Tickers);
+    /**
+     * 价格Realm实例
+     */
+    val tickerRealmInstance: Realm?
 
-    void removeOutdatedTickers();
+    /**
+     * 获取当前代币价格信息
+     *
+     * @param token 代币对象
+     * @return 代币价格信息
+     */
+    fun getCurrentTicker(token: Token?): TokenTicker?
 
-    Realm getRealmInstance(Wallet wallet);
+    /**
+     * 获取当前代币价格信息
+     *
+     * @param key 代币键值
+     * @return 代币价格信息
+     */
+    fun getCurrentTicker(key: String?): TokenTicker?
 
-    Realm getTickerRealmInstance();
+    /**
+     * 设置可见性变更
+     *
+     * @param wallet 钱包信息
+     * @param cAddr 合约地址
+     */
+    fun setVisibilityChanged(wallet: Wallet?, cAddr: ContractAddress?)
 
-    TokenTicker getCurrentTicker(Token token);
+    /**
+     * 获取代币启用状态
+     *
+     * @param token 代币对象
+     * @return 是否启用
+     */
+    fun getEnabled(token: Token?): Boolean
 
-    TokenTicker getCurrentTicker(String key);
+    /**
+     * 更新NFT资产
+     *
+     * @param wallet 钱包地址
+     * @param erc721Token ERC721代币
+     * @param additions 添加的资产列表
+     * @param removals 移除的资产列表
+     */
+    fun updateNFTAssets(
+        wallet: String?,
+        erc721Token: Token?,
+        additions: List<BigInteger?>?,
+        removals: List<BigInteger?>?
+    )
 
-    void setVisibilityChanged(Wallet wallet, ContractAddress cAddr);
+    /**
+     * 存储资产
+     *
+     * @param wallet 钱包地址
+     * @param token 代币对象
+     * @param tokenId 代币ID
+     * @param asset NFT资产
+     */
+    fun storeAsset(wallet: String?, token: Token?, tokenId: BigInteger?, asset: NFTAsset?)
 
-    boolean getEnabled(Token token);
+    /**
+     * 获取总价值
+     *
+     * @param currentAddress 当前地址
+     * @param networkFilters 网络过滤器
+     * @return 总价值对
+     */
+    suspend fun getTotalValue(
+        currentAddress: String?,
+        networkFilters: List<Long?>?
+    ): Pair<Double?, Double?>?
 
-    void updateNFTAssets(String wallet, Token erc721Token, List<BigInteger> additions, List<BigInteger> removals);
+    /**
+     * 获取价格时间映射
+     *
+     * @param chainId 链ID
+     * @param erc20Tokens ERC20代币列表
+     * @return 价格时间映射
+     */
+    fun getTickerTimeMap(chainId: Long, erc20Tokens: List<TokenCardMeta?>?): Map<String?, Long?>?
 
-    void storeAsset(String wallet, Token token, BigInteger tokenId, NFTAsset asset);
+    /**
+     * 删除价格信息
+     */
+    fun deleteTickers()
 
-    Single<Pair<Double, Double>> getTotalValue(String currentAddress, List<Long> networkFilters);
+    /**
+     * 获取价格更新列表
+     *
+     * @param networkFilter 网络过滤器
+     * @return 价格更新列表
+     */
+    suspend fun getTickerUpdateList(networkFilter: List<Long?>?): List<String?>?
 
-    Map<String, Long> getTickerTimeMap(long chainId, List<TokenCardMeta> erc20Tokens);
+    /**
+     * 获取代币分组
+     *
+     * @param chainId 链ID
+     * @param address 代币地址
+     * @param type 合约类型
+     * @return 代币分组
+     */
+    fun getTokenGroup(chainId: Long, address: String?, type: ContractType?): TokenGroup?
 
-    void deleteTickers();
+    /**
+     * 更新价格信息
+     *
+     * @param chainId 链ID
+     * @param address 代币地址
+     * @param ticker 价格信息
+     */
+    fun updateTicker(chainId: Long, address: String?, ticker: TokenTicker?)
 
-    Single<List<String>> getTickerUpdateList(List<Long> networkFilter);
+    /**
+     * 存储代币信息
+     *
+     * @param wallet 钱包信息
+     * @param tInfo 代币信息
+     * @param type 合约类型
+     * @return 存储的代币信息
+     */
+    suspend fun storeTokenInfo(wallet: Wallet?, tInfo: TokenInfo?, type: ContractType?): TokenInfo?
 
-    TokenGroup getTokenGroup(long chainId, String address, ContractType type);
+    /**
+     * 获取认证代币
+     *
+     * @param chainId 链ID
+     * @param wallet 钱包信息
+     * @param address 代币地址
+     * @param attnId 认证ID
+     * @return 认证代币
+     */
+    fun fetchAttestation(chainId: Long, wallet: Wallet?, address: String?, attnId: String?): Token?
 
-    void updateTicker(long chainId, String address, TokenTicker ticker);
-    Single<TokenInfo> storeTokenInfo(Wallet wallet, TokenInfo tInfo, ContractType type);
+    /**
+     * 获取认证代币列表
+     *
+     * @param chainId 链ID
+     * @param walletAddress 钱包地址
+     * @param tokenAddress 代币地址
+     * @return 认证代币列表
+     */
+    fun fetchAttestations(
+        chainId: Long,
+        walletAddress: String?,
+        tokenAddress: String?
+    ): List<Token?>?
 
-    Token fetchAttestation(long chainId, Wallet wallet, String address, String attnId);
-
-    List<Token> fetchAttestations(long chainId, String walletAddress, String tokenAddress);
-    List<Token> fetchAttestations(String walletAddress);
+    /**
+     * 获取认证代币列表
+     *
+     * @param walletAddress 钱包地址
+     * @return 认证代币列表
+     */
+    fun fetchAttestations(walletAddress: String?): List<Token?>?
 }

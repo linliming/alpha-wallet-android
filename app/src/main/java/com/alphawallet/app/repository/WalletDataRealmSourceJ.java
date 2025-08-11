@@ -30,7 +30,7 @@ import timber.log.Timber;
  * Stormbird in Singapore
  */
 
-public class WalletDataRealmSource {
+public class WalletDataRealmSourceJ {
     private static final String TAG = WalletDataRealmSource.class.getSimpleName();
     private final RealmManager realmManager;
 
@@ -82,7 +82,7 @@ public class WalletDataRealmSource {
             {
                 Wallet w = composeKeyType(walletTypeData);
                 if (w == null || (w.type == WalletType.KEYSTORE || w.type == WalletType.KEYSTORE_LEGACY) &&
-                        !keyStoreList.contains(walletTypeData.getAddress().toLowerCase()))
+                        !keyStoreList.contains(walletTypeData.address.toLowerCase()))
                 {
                     continue;
                 }
@@ -144,12 +144,12 @@ public class WalletDataRealmSource {
     private Wallet composeKeyType(RealmKeyType keyType)
     {
         Wallet wallet = null;
-        if (keyType != null && !TextUtils.isEmpty(keyType.getAddress()) && WalletUtils.isValidAddress(keyType.getAddress()))
+        if (keyType != null && !TextUtils.isEmpty(keyType.address) && WalletUtils.isValidAddress(keyType.address))
         {
-            wallet = new Wallet(keyType.getAddress());
+            wallet = new Wallet(keyType.address);
             wallet.type = keyType.getType();
-            wallet.walletCreationTime = keyType.getDateAdded();
-            wallet.lastBackupTime = keyType.getLastBackup();
+            wallet.walletCreationTime = keyType.dateAdded;
+            wallet.lastBackupTime = keyType.lastBackup;
             wallet.authLevel = keyType.getAuthLevel();
         }
 
@@ -283,7 +283,7 @@ public class WalletDataRealmSource {
 
                 if (realmKey != null)
                 {
-                    realmKey.setLastBackup(System.currentTimeMillis());
+                    realmKey.lastBackup = System.currentTimeMillis();
                 }
             });
         }
@@ -439,7 +439,7 @@ public class WalletDataRealmSource {
 
             if (realmKey != null)
             {
-                return realmKey.getLastBackup();
+                return realmKey.lastBackup;
             }
             else
             {
@@ -476,20 +476,20 @@ public class WalletDataRealmSource {
             realmKey = r.createObject(RealmKeyType.class, wallet.address);
             if (wallet.walletCreationTime != 0)
             {
-                realmKey.setDateAdded(wallet.walletCreationTime);
+                realmKey.dateAdded = wallet.walletCreationTime;
             }
             else
             {
-                realmKey.setDateAdded(System.currentTimeMillis());
+                realmKey.dateAdded = System.currentTimeMillis();
             }
         }
-        else if (realmKey.getDateAdded() == 0)
+        else if (realmKey.dateAdded == 0)
         {
-            realmKey.setDateAdded(System.currentTimeMillis());
+            realmKey.dateAdded = System.currentTimeMillis();
         }
 
         realmKey.setType(wallet.type);
-        realmKey.setLastBackup(wallet.lastBackupTime);
+        realmKey.lastBackup = wallet.lastBackupTime;
         realmKey.setAuthLevel(wallet.authLevel);
         realmKey.setKeyModulus("");
         r.insertOrUpdate(realmKey);
@@ -561,11 +561,11 @@ public class WalletDataRealmSource {
                         {
                             if (walletFromTypeRealm.walletCreationTime != 0 && walletFromTypeRealm.walletCreationTime < w.walletCreationTime)
                             {
-                                data.setDateAdded(walletFromTypeRealm.walletCreationTime);
+                                data.dateAdded = walletFromTypeRealm.walletCreationTime;
                             }
                             if (walletFromTypeRealm.lastBackupTime != 0 && w.lastBackupTime == 0)
                             {
-                                data.setLastBackup(walletFromTypeRealm.lastBackupTime);
+                                data.lastBackup = walletFromTypeRealm.lastBackupTime;
                             }
                             r.insertOrUpdate(data);
                         }

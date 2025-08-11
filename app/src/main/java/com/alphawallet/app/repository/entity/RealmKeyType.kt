@@ -1,60 +1,37 @@
-package com.alphawallet.app.repository.entity;
+package com.alphawallet.app.repository.entity
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import com.alphawallet.app.entity.WalletType;
-import com.alphawallet.app.service.KeyService;
+import com.alphawallet.app.entity.WalletType
+import com.alphawallet.app.service.KeyService.AuthenticationLevel
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 
-public class RealmKeyType extends RealmObject
-{
+class RealmKeyType : RealmObject() {
+    @JvmField
     @PrimaryKey
-    private String address;
-    private byte type;
-    private byte authLevel;
-    private long lastBackup;
-    private long dateAdded;
-    private String modulus; //Added for future possibility that we use HD key modulus, so DB doesn't need to be re-initialised
+    var address: String? = null
+    private var type: Byte = 0
+    private var authLevel: Byte = 0
 
-    public String getAddress()
-    {
-        return address;
-    }
-    public void setAddress(String address)
-    {
-        this.address = address;
-    }
+    @JvmField
+    var lastBackup: Long = 0
 
-    public WalletType getType() { return WalletType.values()[type]; }
-    public void setType(WalletType type) { this.type = (byte)type.ordinal(); }
+    @JvmField
+    var dateAdded: Long = 0
+    var keyModulus: String? = null
 
-    public KeyService.AuthenticationLevel getAuthLevel() { return KeyService.AuthenticationLevel.values()[authLevel]; }
-    public void setAuthLevel(KeyService.AuthenticationLevel authLevel) { this.authLevel = (byte)authLevel.ordinal(); }
+    fun getType(): WalletType = WalletType.entries[type.toInt()]
 
-    public long getLastBackup()
-    {
-        return lastBackup;
-    }
-    public void setLastBackup(long lastBackup)
-    {
-        this.lastBackup = lastBackup;
+    fun setType(type: WalletType) {
+        this.type = type.ordinal.toByte()
     }
 
-    public long getDateAdded()
-    {
-        return dateAdded;
-    }
-    public void setDateAdded(long dateAdded)
-    {
-        this.dateAdded = dateAdded;
+    fun setKeyModulus(keyModulus: String?) {
+        this.keyModulus = keyModulus
     }
 
-    public String getKeyModulus()
-    {
-        return modulus;
-    }
+    fun getAuthLevel(): AuthenticationLevel = AuthenticationLevel.entries.toTypedArray().get(authLevel.toInt())
 
-    public void setKeyModulus(String modulus)
-    {
-        this.modulus = modulus;
+    fun setAuthLevel(authLevel: AuthenticationLevel) {
+        this.authLevel = authLevel.ordinal.toByte()
     }
 }

@@ -35,7 +35,7 @@ import timber.log.Timber;
  * Created by James on 29/05/2019.
  * Stormbird in Sydney
  */
-public class AWEnsResolver
+public class AWEnsResolverJ
 {
     private static final String OPENSEA_IMAGE_PREVIEW = "image_preview_url";
     private static final String OPENSEA_IMAGE_ORIGINAL = "image_original_url"; //in case of SVG; Opensea breaks SVG compression
@@ -46,12 +46,12 @@ public class AWEnsResolver
     private final EnsResolver avatarEnsResolver;
     private final long chainId;
 
-    public AWEnsResolver(Web3j web3j, Context context)
+    public AWEnsResolverJ(Web3j web3j, Context context)
     {
         this(web3j, context, -1);
     }
 
-    public AWEnsResolver(Web3j web3j, Context context, long chainId)
+    public AWEnsResolverJ(Web3j web3j, Context context, long chainId)
     {
         this.ensResolver = new EnsResolver(web3j);
         this.avatarEnsResolver = new EnsResolver(web3j);

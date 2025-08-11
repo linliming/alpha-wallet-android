@@ -16,11 +16,11 @@ import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import timber.log.Timber;
 
-public class GenericWalletInteract
+public class GenericWalletInteractJ
 {
 	private final WalletRepositoryType walletRepository;
 
-	public GenericWalletInteract(WalletRepositoryType walletRepository) {
+	public GenericWalletInteractJ(WalletRepositoryType walletRepository) {
 		this.walletRepository = walletRepository;
 	}
 

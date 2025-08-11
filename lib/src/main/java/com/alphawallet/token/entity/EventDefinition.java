@@ -62,9 +62,9 @@ public class EventDefinition
 
     public long getEventChainId()
     {
-        if (parentAttribute != null)
+        if (parentAttribute != null && parentAttribute.getOriginContract() != null)
         {
-            return parentAttribute.originContract.addresses.keySet().iterator().next();
+            return parentAttribute.getOriginContract().addresses.keySet().iterator().next();
         }
         else
         {
@@ -76,9 +76,9 @@ public class EventDefinition
     {
         long chainId = getEventChainId();
         String contractAddress;
-        if (parentAttribute != null)
+        if (parentAttribute != null && parentAttribute.getOriginContract() != null)
         {
-            contractAddress = parentAttribute.originContract.addresses.get(chainId).get(0);
+            contractAddress = parentAttribute.getOriginContract().addresses.get(chainId).get(0);
         }
         else
         {

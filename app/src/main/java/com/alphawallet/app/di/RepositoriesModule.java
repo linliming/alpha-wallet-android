@@ -27,9 +27,11 @@ import com.alphawallet.app.repository.TransactionsRealmCache;
 import com.alphawallet.app.repository.WalletDataRealmSource;
 import com.alphawallet.app.repository.WalletRepository;
 import com.alphawallet.app.repository.WalletRepositoryType;
+import com.alphawallet.app.repository.WalletRepositoryTypeJ;
 import com.alphawallet.app.service.AccountKeystoreService;
 import com.alphawallet.app.service.AlphaWalletNotificationService;
 import com.alphawallet.app.service.AlphaWalletService;
+import com.alphawallet.app.entity.AnalyticsProperties;
 import com.alphawallet.app.service.AnalyticsService;
 import com.alphawallet.app.service.AnalyticsServiceType;
 import com.alphawallet.app.service.AssetDefinitionService;
@@ -39,7 +41,6 @@ import com.alphawallet.app.service.IPFSServiceType;
 import com.alphawallet.app.service.KeyService;
 import com.alphawallet.app.service.KeystoreAccountService;
 import com.alphawallet.app.service.NotificationService;
-import com.alphawallet.app.service.OkLinkService;
 import com.alphawallet.app.service.OpenSeaService;
 import com.alphawallet.app.service.RealmManager;
 import com.alphawallet.app.service.SwapService;
@@ -199,7 +200,7 @@ public class RepositoriesModule
                                         TokenRepositoryType tokenRepository,
                                         TickerService tickerService,
                                         OpenSeaService openseaService,
-                                        AnalyticsServiceType analyticsService,
+                                        AnalyticsServiceType<AnalyticsProperties> analyticsService,
                                         OkHttpClient client)
     {
         return new TokensService(ethereumNetworkRepository, tokenRepository, tickerService, openseaService, analyticsService, client);
@@ -269,14 +270,14 @@ public class RepositoriesModule
 
     @Singleton
     @Provides
-    KeyService provideKeyService(@ApplicationContext Context ctx, AnalyticsServiceType analyticsService)
+    KeyService provideKeyService(@ApplicationContext Context ctx, AnalyticsServiceType<AnalyticsProperties> analyticsService)
     {
         return new KeyService(ctx, analyticsService);
     }
 
     @Singleton
     @Provides
-    AnalyticsServiceType provideAnalyticsService(@ApplicationContext Context ctx, PreferenceRepositoryType preferenceRepository)
+    AnalyticsServiceType<AnalyticsProperties> provideAnalyticsService(@ApplicationContext Context ctx, PreferenceRepositoryType preferenceRepository)
     {
         return new AnalyticsService(ctx, preferenceRepository);
     }

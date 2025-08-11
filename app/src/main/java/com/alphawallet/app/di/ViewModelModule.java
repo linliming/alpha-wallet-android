@@ -21,7 +21,7 @@ import com.alphawallet.app.repository.LocaleRepositoryType;
 import com.alphawallet.app.repository.PreferenceRepositoryType;
 import com.alphawallet.app.repository.TokenRepositoryType;
 import com.alphawallet.app.repository.TransactionRepositoryType;
-import com.alphawallet.app.repository.WalletRepositoryType;
+import com.alphawallet.app.repository.WalletRepositoryTypeJ;
 import com.alphawallet.app.router.CoinbasePayRouter;
 import com.alphawallet.app.router.ExternalBrowserRouter;
 import com.alphawallet.app.router.HomeRouter;
@@ -33,6 +33,7 @@ import com.alphawallet.app.router.RedeemSignatureDisplayRouter;
 import com.alphawallet.app.router.SellDetailRouter;
 import com.alphawallet.app.router.TokenDetailRouter;
 import com.alphawallet.app.router.TransferTicketDetailRouter;
+import com.alphawallet.app.entity.AnalyticsProperties;
 import com.alphawallet.app.service.AnalyticsServiceType;
 
 import dagger.Module;
@@ -48,12 +49,12 @@ import dagger.hilt.android.components.ViewModelComponent;
 public class ViewModelModule {
 
     @Provides
-    FetchWalletsInteract provideFetchWalletInteract(WalletRepositoryType walletRepository) {
+    FetchWalletsInteract provideFetchWalletInteract(WalletRepositoryTypeJ walletRepository) {
         return new FetchWalletsInteract(walletRepository);
     }
 
     @Provides
-    SetDefaultWalletInteract provideSetDefaultAccountInteract(WalletRepositoryType accountRepository) {
+    SetDefaultWalletInteract provideSetDefaultAccountInteract(WalletRepositoryTypeJ accountRepository) {
         return new SetDefaultWalletInteract(accountRepository);
     }
 
@@ -75,7 +76,7 @@ public class ViewModelModule {
 
     @Provides
     ImportWalletInteract provideImportWalletInteract(
-            WalletRepositoryType walletRepository) {
+            WalletRepositoryTypeJ walletRepository) {
         return new ImportWalletInteract(walletRepository);
     }
 
@@ -92,7 +93,7 @@ public class ViewModelModule {
 
     @Provides
     CreateTransactionInteract provideCreateTransactionInteract(TransactionRepositoryType transactionRepository,
-                                                               AnalyticsServiceType analyticsService) {
+                                                               AnalyticsServiceType<AnalyticsProperties> analyticsService) {
         return new CreateTransactionInteract(transactionRepository, analyticsService);
     }
 
@@ -112,7 +113,7 @@ public class ViewModelModule {
     }
 
     @Provides
-    SignatureGenerateInteract provideSignatureGenerateInteract(WalletRepositoryType walletRepository) {
+    SignatureGenerateInteract provideSignatureGenerateInteract(WalletRepositoryTypeJ walletRepository) {
         return new SignatureGenerateInteract(walletRepository);
     }
 
@@ -142,7 +143,7 @@ public class ViewModelModule {
     }
 
     @Provides
-    GenericWalletInteract provideGenericWalletInteract(WalletRepositoryType walletRepository) {
+    GenericWalletInteract provideGenericWalletInteract(WalletRepositoryTypeJ walletRepository) {
         return new GenericWalletInteract(walletRepository);
     }
 
@@ -163,13 +164,13 @@ public class ViewModelModule {
 
     @Provides
     DeleteWalletInteract provideDeleteAccountInteract(
-            WalletRepositoryType accountRepository) {
+            WalletRepositoryTypeJ accountRepository) {
         return new DeleteWalletInteract(accountRepository);
     }
 
     @Provides
     ExportWalletInteract provideExportWalletInteract(
-            WalletRepositoryType walletRepository) {
+            WalletRepositoryTypeJ walletRepository) {
         return new ExportWalletInteract(walletRepository);
     }
 

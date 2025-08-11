@@ -1,162 +1,228 @@
-package com.alphawallet.app.repository.entity;
+package com.alphawallet.app.repository.entity
 
-import static com.alphawallet.ethereum.EthereumNetworkBase.MAINNET_ID;
-
-import android.text.TextUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+import android.text.TextUtils
+import com.alphawallet.ethereum.EthereumNetworkBase
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
+import java.util.Arrays
 
 /**
  * Created by JB on 17/08/2020.
  */
-public class RealmTokenScriptData extends RealmObject
-{
+class RealmTokenScriptData : RealmObject() {
     @PrimaryKey
-    private String instanceKey;
-    private String fileHash; //uniquely identify tokenscript - script MD5 hash
-    private String filePath;
-    private String names; //CSV list of token names allowing for plurals. //TODO: replace with RealmMap when available
-    private String viewList; //CSV list of event views //TODO: replace with RealmMap when available
-    private String ipfsPath;
-    private boolean hasEvents; //TokenScript has events
-    private String schemaUID;
+    private val instanceKey: String? = null
+    var fileHash: String? = null // uniquely identify tokenscript - script MD5 hash
+    var filePath: String? = null
 
-    public long getChainId()
-    {
-        String chainId = instanceKey.split("-")[1];
-        if (Character.isDigit(chainId.charAt(0))) return Long.parseLong(chainId);
-        else return MAINNET_ID;
-    }
+    // CSV list of token names allowing for plurals. //TODO: replace with RealmMap when available
+    private var names: String? = null
 
-    public String getOriginTokenAddress()
-    {
-        return instanceKey.split("-")[0];
-    }
+    // CSV list of event views //TODO: replace with RealmMap when available
+    private var viewList: String? = null
+    var ipfsPath: String? = null
+    private var hasEvents = false // TokenScript has events
+    var schemaUID: String? = null
 
-    public String getFilePath()
-    {
-        return filePath;
-    }
+    /**
+     * 获取链ID
+     *
+     * 从instanceKey中解析链ID，格式为 "address-chainId"
+     * 如果解析失败或instanceKey为空，返回主网ID
+     *
+     * @return 链ID，解析失败时返回主网ID
+     */
+    val chainId: Long
+        get() {
+            return try {
+                // 1. 检查instanceKey是否为空
+                val key = instanceKey ?: return EthereumNetworkBase.MAINNET_ID
 
-    public void setFilePath(String filePath)
-    {
-        this.filePath = filePath;
-    }
+                // 2. 按"-"分割instanceKey
+                val parts = key.split("-", limit = 2)
 
-    public String getName(int count)
-    {
-        Map<String, String> nameMap = getValueMap(names);
-        String value = null;
-        switch (count)
-        {
-            case 1:
-                if (nameMap.containsKey("one")) value = nameMap.get("one");
-                break;
-            default:
-                value = nameMap.get("other");
-            case 2:
-                if (value == null) value = nameMap.get("two");
-                if (value == null) value = getName(1); //still don't have anything, try singular
-                break;
-        }
+                // 3. 检查分割结果是否有效
+                if (parts.size < 2) {
 
-        if (value == null && nameMap.values().size() > 0)
-        {
-            value = nameMap.values().iterator().next();
-        }
+                    return EthereumNetworkBase.MAINNET_ID
+                }
 
-        return value;
-    }
+                val chainIdPart = parts[1]
 
-    private Map<String, String> getValueMap(String values)
-    {
-        Map<String, String> nameMap = new HashMap<>();
-        if (TextUtils.isEmpty(values)) return nameMap;
+                // 4. 检查链ID部分是否为空
+                if (chainIdPart.isBlank()) {
 
-        String[] nameList = values.split(",");
-        boolean state = true;
-        String key = null;
-        for (String s : nameList)
-        {
-            if (state)
-            {
-                key = s;
-                state = false;
-            }
-            else
-            {
-                nameMap.put(key, s);
-                state = true;
+                    return EthereumNetworkBase.MAINNET_ID
+                }
+
+                // 5. 检查是否为数字
+                if (chainIdPart.all { it.isDigit() }) {
+                    chainIdPart.toLong()
+                } else {
+
+                    EthereumNetworkBase.MAINNET_ID
+                }
+            } catch (e: Exception) {
+
+                EthereumNetworkBase.MAINNET_ID
             }
         }
 
-        return nameMap;
+    /**
+     * 获取原始代币地址
+     *
+     * 从instanceKey中解析代币地址，格式为 "address-chainId"
+     * 如果解析失败或instanceKey为空，返回空字符串
+     *
+     * @return 代币地址，解析失败时返回空字符串
+     */
+    val originTokenAddress: String
+        get() {
+            return try {
+                // 1. 检查instanceKey是否为空
+                val key = instanceKey ?: return ""
+
+                // 2. 按"-"分割instanceKey
+                val parts = key.split("-", limit = 2)
+
+                // 3. 检查分割结果是否有效
+                if (parts.isEmpty()) {
+
+                    return ""
+                }
+
+                val addressPart = parts[0]
+
+                // 4. 检查地址部分是否为空
+                if (addressPart.isBlank()) {
+
+                    return ""
+                }
+
+                addressPart
+            } catch (e: Exception) {
+
+                ""
+            }
+        }
+
+    fun getName(count: Int): String? {
+        val nameMap = getValueMap(names)
+        var value: String? = null
+        when (count) {
+            1 -> if (nameMap.containsKey("one")) value = nameMap["one"]
+            2 -> {
+                if (value == null) value = nameMap["two"]
+                if (value == null) value = getName(1) // still don't have anything, try singular
+            }
+
+            else -> {
+                value = nameMap["other"]
+                if (value == null) value = nameMap["two"]
+                if (value == null) value = getName(1)
+            }
+        }
+
+        if (value == null && nameMap.values.size > 0) {
+            value = nameMap.values.iterator().next()
+        }
+
+        return value
     }
 
-    public void setNames(String names)
-    {
-        this.names = names;
+    /**
+     * 解析键值对映射
+     *
+     * 从CSV格式的字符串中解析键值对，格式为 "key1,value1,key2,value2"
+     *
+     * @param values CSV格式的键值对字符串
+     * @return 键值对映射
+     */
+    private fun getValueMap(values: String?): Map<String?, String> {
+        val nameMap: MutableMap<String?, String> = HashMap()
+
+        // 1. 检查输入是否为空
+        if (TextUtils.isEmpty(values)) {
+            return nameMap
+        }
+
+        return try {
+            // 2. 按逗号分割字符串
+            val nameList = values!!.split(",")
+
+            // 3. 检查分割结果是否有效
+            if (nameList.isEmpty()) {
+                return nameMap
+            }
+
+            // 4. 解析键值对
+            var state = true
+            var key: String? = null
+
+            for (s in nameList) {
+                val trimmed = s.trim()
+
+                if (state) {
+                    key = trimmed
+                    state = false
+                } else {
+                    if (key != null && trimmed.isNotBlank()) {
+                        nameMap[key] = trimmed
+                    }
+                    state = true
+                }
+            }
+
+            nameMap
+        } catch (e: Exception) {
+            nameMap
+        }
     }
 
-    public List<String> getViewList()
-    {
-        List<String> viewNames = new ArrayList<>();
-        if (TextUtils.isEmpty(viewList)) return viewNames;
-
-        String[] views = viewList.split(",");
-        viewNames.addAll(Arrays.asList(views));
-        return viewNames;
+    fun setNames(names: String?) {
+        this.names = names
     }
 
-    public void setViewList(String viewList)
-    {
-        this.viewList = viewList;
+    /**
+     * 获取视图列表
+     *
+     * 从CSV格式的字符串中解析视图名称列表
+     *
+     * @return 视图名称列表
+     */
+    fun getViewList(): List<String> {
+        val viewNames: MutableList<String> = ArrayList()
+
+        // 1. 检查viewList是否为空
+        if (TextUtils.isEmpty(viewList)) {
+            return viewNames
+        }
+
+        return try {
+            // 2. 按逗号分割字符串
+            val views = viewList!!.split(",")
+
+            // 3. 过滤空值并添加到列表
+            views.forEach { view ->
+                val trimmed = view.trim()
+                if (trimmed.isNotBlank()) {
+                    viewNames.add(trimmed)
+                }
+            }
+
+            viewNames
+        } catch (e: Exception) {
+            viewNames
+        }
     }
 
-    public void setFileHash(String fileHash)
-    {
-        this.fileHash = fileHash;
+    fun setViewList(viewList: String?) {
+        this.viewList = viewList
     }
 
-    public String getFileHash()
-    {
-        return this.fileHash;
-    }
+    fun hasEvents(): Boolean = hasEvents
 
-    public boolean hasEvents()
-    {
-        return hasEvents;
-    }
-
-    public void setHasEvents(boolean hasEvents)
-    {
-        this.hasEvents = hasEvents;
-    }
-
-    public String getIpfsPath()
-    {
-        return ipfsPath;
-    }
-
-    public void setIpfsPath(String ipfsPath)
-    {
-        this.ipfsPath = ipfsPath;
-    }
-
-    public String getSchemaUID()
-    {
-        return schemaUID;
-    }
-
-    public void setSchemaUID(String schemaUID)
-    {
-        this.schemaUID = schemaUID;
+    fun setHasEvents(hasEvents: Boolean) {
+        this.hasEvents = hasEvents
     }
 }

@@ -97,9 +97,9 @@ public class EventHolder extends BinderViewHolder<EventMeta> implements View.OnC
         String itemView = null;
 
         TokenDefinition td = assetDefinition.getAssetDefinition(token);
-        if (td != null && td.getActivityCards().containsKey(eventData.getFunctionId()))
+        if (td != null && td.activityCards.containsKey(eventData.getFunctionId()))
         {
-            TSTokenView view = td.getActivityCards().get(eventData.getFunctionId()).getView(ASSET_SUMMARY_VIEW_NAME);
+            TSTokenView view = td.activityCards.get(eventData.getFunctionId()).getView(ASSET_SUMMARY_VIEW_NAME);
             if (view != null) itemView = view.getTokenView();
         }
 

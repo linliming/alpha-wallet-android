@@ -3,8 +3,6 @@ package com.alphawallet.app.viewmodel;
 import static com.alphawallet.app.C.EXTRA_ADDRESS;
 import static com.alphawallet.app.repository.TokensRealmSource.ADDRESS_FORMAT;
 import static com.alphawallet.app.widget.CopyTextView.KEY_ADDRESS;
-import static com.alphawallet.token.tools.TokenDefinition.NO_SCRIPT;
-import static com.alphawallet.token.tools.TokenDefinition.UNCHANGED_SCRIPT;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -23,19 +21,14 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
-import com.alphawallet.app.entity.ContractType;
-import com.alphawallet.app.entity.EasAttestation;
-import com.alphawallet.app.entity.QRResult;
 import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.entity.WalletType;
 import com.alphawallet.app.entity.analytics.QrScanSource;
-import com.alphawallet.app.entity.attestation.ImportAttestation;
 import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokendata.TokenGroup;
 import com.alphawallet.app.entity.tokens.Attestation;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.entity.tokens.TokenCardMeta;
-import com.alphawallet.app.entity.tokens.TokenInfo;
 import com.alphawallet.app.entity.walletconnect.WalletConnectSessionItem;
 import com.alphawallet.app.interact.ChangeTokenEnableInteract;
 import com.alphawallet.app.interact.FetchTokensInteract;
@@ -43,7 +36,6 @@ import com.alphawallet.app.interact.GenericWalletInteract;
 import com.alphawallet.app.repository.CoinbasePayRepository;
 import com.alphawallet.app.repository.OnRampRepositoryType;
 import com.alphawallet.app.repository.PreferenceRepositoryType;
-import com.alphawallet.app.repository.TokensMappingRepositoryType;
 import com.alphawallet.app.repository.TokensRealmSource;
 import com.alphawallet.app.repository.WalletItem;
 import com.alphawallet.app.repository.entity.RealmAttestation;
@@ -61,11 +53,8 @@ import com.alphawallet.app.ui.QRScanning.QRScannerActivity;
 import com.alphawallet.app.ui.TokenManagementActivity;
 import com.alphawallet.app.walletconnect.AWWalletConnectClient;
 import com.alphawallet.app.widget.WalletFragmentActionsView;
-import com.alphawallet.token.entity.AttestationValidationStatus;
-import com.alphawallet.token.tools.TokenDefinition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 import org.web3j.crypto.Keys;
@@ -85,7 +74,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import timber.log.Timber;
 
 @HiltViewModel
 public class WalletViewModel extends BaseViewModel

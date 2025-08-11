@@ -1,9 +1,7 @@
 package com.alphawallet.app.interact;
 
-import android.util.Log;
-
 import com.alphawallet.app.entity.ContractType;
-import com.alphawallet.app.repository.WalletRepositoryType;
+import com.alphawallet.app.repository.WalletRepositoryTypeJ;
 import com.alphawallet.app.entity.MessagePair;
 import com.alphawallet.app.entity.SignaturePair;
 
@@ -20,9 +18,9 @@ import timber.log.Timber;
 public
 class SignatureGenerateInteract {
 
-    private final WalletRepositoryType walletRepository;
+    private final WalletRepositoryTypeJ walletRepository;
 
-    public SignatureGenerateInteract(WalletRepositoryType walletRepository) {
+    public SignatureGenerateInteract(WalletRepositoryTypeJ walletRepository) {
         this.walletRepository = walletRepository;
     }
 

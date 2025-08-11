@@ -13,6 +13,7 @@ import com.alphawallet.app.entity.TransactionReturn;
 import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.repository.EthereumNetworkRepository;
 import com.alphawallet.app.repository.TransactionRepositoryType;
+import com.alphawallet.app.entity.AnalyticsProperties;
 import com.alphawallet.app.service.AnalyticsServiceType;
 import com.alphawallet.app.service.KeystoreAccountService;
 import com.alphawallet.app.service.TransactionSendHandlerInterface;
@@ -35,7 +36,7 @@ import io.reactivex.schedulers.Schedulers;
 public class CreateTransactionInteract
 {
     private final TransactionRepositoryType transactionRepository;
-    private final AnalyticsServiceType analyticsService;
+    private final AnalyticsServiceType<AnalyticsProperties> analyticsService;
     private TransactionSendHandlerInterface txInterface;
     private Disposable disposable;
     /**
@@ -45,7 +46,7 @@ public class CreateTransactionInteract
     private long nonceForHardwareSign;
 
     public CreateTransactionInteract(TransactionRepositoryType transactionRepository,
-                                     AnalyticsServiceType analyticsService)
+                                     AnalyticsServiceType<AnalyticsProperties> analyticsService)
     {
         this.transactionRepository = transactionRepository;
         this.analyticsService = analyticsService;

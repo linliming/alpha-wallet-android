@@ -11,7 +11,6 @@ import com.alphawallet.app.entity.DeepLinkRequest;
 import com.alphawallet.app.entity.DeepLinkType;
 import com.alphawallet.app.entity.EIP681Type;
 import com.alphawallet.app.entity.QRResult;
-import com.alphawallet.app.entity.attestation.ImportAttestation;
 import com.alphawallet.app.repository.EthereumNetworkRepository;
 import com.alphawallet.app.util.Utils;
 import com.alphawallet.token.entity.SalesOrderMalformed;

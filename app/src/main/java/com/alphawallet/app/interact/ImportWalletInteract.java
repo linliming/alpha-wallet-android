@@ -2,7 +2,7 @@ package com.alphawallet.app.interact;
 
 import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.entity.WalletType;
-import com.alphawallet.app.repository.WalletRepositoryType;
+import com.alphawallet.app.repository.WalletRepositoryTypeJ;
 import com.alphawallet.app.service.KeyService;
 import com.alphawallet.app.util.ens.AWEnsResolver;
 
@@ -12,9 +12,9 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ImportWalletInteract {
 
-    private final WalletRepositoryType walletRepository;
+    private final WalletRepositoryTypeJ walletRepository;
 
-    public ImportWalletInteract(WalletRepositoryType walletRepository) {
+    public ImportWalletInteract(WalletRepositoryTypeJ walletRepository) {
         this.walletRepository = walletRepository;
     }
 

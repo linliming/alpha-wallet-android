@@ -59,7 +59,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @HiltViewModel
-public class SwapViewModel extends BaseViewModel implements TransactionSendHandlerInterface
+public class SwapViewModel extends BaseViewModel  implements TransactionSendHandlerInterface
 {
     private final AssetDefinitionService assetDefinitionService;
     private final PreferenceRepositoryType preferenceRepository;

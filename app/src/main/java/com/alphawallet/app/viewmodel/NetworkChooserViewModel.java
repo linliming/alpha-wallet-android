@@ -5,7 +5,6 @@ import android.content.Intent;
 
 import com.alphawallet.app.entity.NetworkInfo;
 import com.alphawallet.app.repository.EthereumNetworkRepositoryType;
-import com.alphawallet.app.repository.PreferenceRepositoryType;
 import com.alphawallet.app.service.TokensService;
 import com.alphawallet.app.ui.NetworkToggleActivity;
 
