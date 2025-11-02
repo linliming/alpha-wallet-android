@@ -26,7 +26,7 @@ class FunctionDefinition {
     var tokenId: BigInteger? = null
 
     @JvmField
-    var eTransaction: EthereumTransaction? = null
+    var tx: EthereumTransaction? = null
     var namedTypeReturn: String? = null
 
     val tokenRequirement: Int

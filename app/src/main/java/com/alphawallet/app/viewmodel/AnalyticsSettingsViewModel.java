@@ -20,21 +20,21 @@ public class AnalyticsSettingsViewModel extends BaseViewModel
 
     public boolean isAnalyticsEnabled()
     {
-        return preferenceRepository.isAnalyticsEnabled();
+        return preferenceRepository.isAnalyticsEnabled;
     }
 
     public boolean isCrashReportingEnabled()
     {
-        return preferenceRepository.isCrashReportingEnabled();
+        return preferenceRepository.isCrashReportingEnabled;
     }
 
     public void toggleAnalytics(boolean isEnabled)
     {
-        preferenceRepository.setAnalyticsEnabled(isEnabled);
+        preferenceRepository.isAnalyticsEnabled = isEnabled;
     }
 
     public void toggleCrashReporting(boolean isEnabled)
     {
-        preferenceRepository.setCrashReportingEnabled(isEnabled);
+        preferenceRepository.isCrashReportingEnabled = isEnabled;
     }
 }

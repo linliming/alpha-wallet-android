@@ -346,7 +346,7 @@ class AssetDefinitionService(
             deleteAllInternalScriptFromRealm()
 
             // 加载捆绑的脚本
-            localTSMLFiles.forEach { asset ->
+            localTSMLFilesList.forEach { asset ->
                 try {
                     addContractAssets(asset)
                 } catch (e: Exception) {
@@ -363,7 +363,7 @@ class AssetDefinitionService(
      *
      * @return TSML 文件列表
      */
-    private val localTSMLFiles: List<String>
+    private val localTSMLFilesList: List<String>
         get() = getLocalTSMLFiles()
 
     /**
@@ -632,9 +632,9 @@ class AssetDefinitionService(
                     val realmEvents: RealmResults<RealmAuxData> =
                         r
                             .where(RealmAuxData::class.java)
-                            .equalTo("tokenAddress", scriptData.originTokenAddress)
+                            .equalTo("tokenAddress", scriptData.getOriginTokenAddress())
                             .or()
-                            .contains("instanceKey", scriptData.originTokenAddress)
+                            .contains("instanceKey", scriptData.getOriginTokenAddress())
                             .findAll()
                     realmEvents.deleteAllFromRealm()
                 }
@@ -908,14 +908,14 @@ class AssetDefinitionService(
 
     private fun getTSDataKey(
         chainId: Long,
-        address: String,
+        address: String?,
     ): String {
         var address = address
         if (address.equals(tokenWalletAddress, ignoreCase = true)) {
             address = "ethereum"
         }
 
-        return address.lowercase(Locale.getDefault()) + "-" + chainId
+        return address?.lowercase(Locale.getDefault()) + "-" + chainId
     }
 
     /**
@@ -984,21 +984,6 @@ class AssetDefinitionService(
         }
 
         return fileList
-    }
-
-    override fun getFunctionResult(
-        contract: ContractAddress?,
-        attr: Attribute?,
-        tokenId: BigInteger?,
-    ): TransactionResult {
-        TODO("Not yet implemented")
-    }
-
-    override fun storeAuxData(
-        walletAddress: String?,
-        tResult: TransactionResult?,
-    ): TransactionResult {
-        TODO("Not yet implemented")
     }
 
     override fun resolveOptimisedAttr(
@@ -1206,18 +1191,17 @@ class AssetDefinitionService(
      * @param token Token 实例
      * @return 操作结果
      */
-    suspend fun refreshAllAttributesAsync(token: Token): Boolean {
+    suspend fun refreshAllAttributes(token: Token): Boolean {
         val td: TokenDefinition = getAssetDefinition(token) ?: return false
 
         return withContext(ioDispatcher) {
             try {
                 // 并发处理所有属性
-                val jobs =
-                    td.attributes.values.map { attribute ->
+                val jobs = td.attributes.values.map { attribute ->
                         async {
                             if (attribute.usesTokenId()) {
                                 // 为每个 tokenId 更新属性
-                                token.tokenAssets.keys
+                                token.getTokenAssets().keys
                                     .map { tokenId ->
                                         async {
                                             updateAttributeResult(token, td, attribute, tokenId)
@@ -1328,7 +1312,7 @@ class AssetDefinitionService(
 
         definition?.let { td ->
             td.attributes.keys.forEach { key ->
-                result.setAttribute(key, getTokenscriptAttr(td, tokenId, key))
+                getTokenscriptAttr(td, tokenId, key)?.let { result.setAttribute(key, it) }
             }
         }
 
@@ -1375,7 +1359,7 @@ class AssetDefinitionService(
                     TokenScriptResult.Attribute(
                         attrType,
                         attrType.processValue(value),
-                        attrType.getSyntaxVal(attrType.toString(value)),
+                        attrType.getSyntaxVal(attrType.toString(value)).toString(),
                     )
                 }
             }
@@ -1480,7 +1464,7 @@ class AssetDefinitionService(
      */
     private fun checkCachedDefinition(
         chainId: Long,
-        address: String,
+        address: String?,
     ): TokenDefinition? {
         cachedDefinition?.let { definition ->
 
@@ -1488,7 +1472,7 @@ class AssetDefinitionService(
 
             holdingContracts?.addresses?.get(chainId)?.let { addresses ->
 
-                val targetAddress = address.lowercase(Locale.getDefault())
+                val targetAddress = address?.lowercase(Locale.getDefault())
                 return if (addresses.any { it.equals(targetAddress, ignoreCase = true) }) {
                     definition
                 } else {
@@ -1560,12 +1544,12 @@ class AssetDefinitionService(
             getAttestationTSFile(token)
         } else {
             // 对于普通代币，使用token的tsKey加上.tsml扩展名来定位TokenScript文件
-            locateTokenScriptFile(token.tsKey + TS_EXTENSION)
+            locateTokenScriptFile(token.getTSKey() + TS_EXTENSION)
         }
 
     fun getAssetDefinitionDeepScan(attn: Attestation): TokenDefinition? {
         try {
-            var tsf = locateTokenScriptFile(attn.tsKey + TS_EXTENSION) // try easy find
+            var tsf = locateTokenScriptFile(attn.getTSKey() + TS_EXTENSION) // try easy find
             if (tsf.exists()) {
                 return parseFile(tsf.getInputStreamSafe())
             }
@@ -1610,7 +1594,7 @@ class AssetDefinitionService(
      */
     private fun getAttestationTSFile(attn: Attestation): TokenScriptFile {
         // 首先尝试直接从文件恢复 - 注意这对新导入的attestation不起作用，因为我们没有collection ID
-        var tsfReturn = locateTokenScriptFile(attn.tsKey + TS_EXTENSION)
+        var tsfReturn = locateTokenScriptFile(attn.getTSKey() + TS_EXTENSION)
         if (tsfReturn.exists()) {
             // 如果文件存在，直接返回
             return tsfReturn
@@ -1623,7 +1607,7 @@ class AssetDefinitionService(
             val realmData: RealmResults<RealmTokenScriptData> =
                 realm
                     .where(RealmTokenScriptData::class.java)
-                    .equalTo("schemaUID", attn.schemaUID) // 根据schema UID进行匹配
+                    .equalTo("schemaUID", attn.getSchemaUID()) // 根据schema UID进行匹配
                     .findAll()
 
             // 遍历所有候选的TokenScript数据
@@ -1725,7 +1709,7 @@ class AssetDefinitionService(
 
         // 检查是否存在已缓存的定义，如果存在则直接返回缓存的结果
         // 使用token的链ID和地址作为缓存键进行查找
-        if (checkCachedDefinition(token.tokenInfo.chainId, token.address) != null) {
+        if (checkCachedDefinition(token.tokenInfo.chainId, token.getAddress()) != null) {
             return cachedDefinition
         }
 
@@ -1783,14 +1767,14 @@ class AssetDefinitionService(
     private suspend fun getAssetDefinitionAsync(
         assetDef: TokenDefinition?,
         chainId: Long,
-        contractName: String,
+        contractName: String?,
     ): TokenDefinition =
         when {
             assetDef != null -> assetDef
             contractName != "ethereum" -> {
                 // 此阶段脚本不会替换现有脚本，可以安全地写入数据库
                 try {
-                    val newFile = fetchXMLFromServer(chainId, contractName.lowercase(Locale.getDefault()))
+                    val newFile = fetchXMLFromServer(chainId, contractName?.lowercase(Locale.getDefault()) ?: "")
                     handleNewTSFile(newFile ?: File(""))
                 } catch (e: Exception) {
                     Timber.e(e, "获取资产定义失败: chainId=$chainId, contract=$contractName")
@@ -1816,7 +1800,7 @@ class AssetDefinitionService(
         waitForAssets()
 
         return getAssetDefinitionAsync(
-            getDefinition(token.tsKey),
+            getDefinition(token.getTSKey()),
             token.tokenInfo.chainId,
             contractName,
         )
@@ -1873,21 +1857,19 @@ class AssetDefinitionService(
      * @return
      */
     fun getIssuerName(token: Token): String {
-        var issuer = token.networkName
+        var issuer = token.getNetworkName()
 
         try {
             realmManager.getRealmInstance(ASSET_DEFINITION_DB).use { realm ->
                 val tsData =
                     realm
                         .where(RealmTokenScriptData::class.java)
-                        .equalTo("instanceKey", token.tsKey)
+                        .equalTo("instanceKey", token.getTSKey())
                         .findFirst()
                 if (tsData != null) {
                     tsData.fileHash?.let {
                         val sig = getCertificateFromRealm(it)
-                        if (sig?.keyName != null) {
-                            issuer = sig.keyName
-                        }
+                        if (sig?.keyName != null) issuer = sig.keyName ?: issuer
                     }
                 }
             }
@@ -2069,45 +2051,43 @@ class AssetDefinitionService(
         }
     }
 
-    // Call contract and check for script
-    private fun fetchTokenScriptFromContract(
+    /**
+     * 从合约获取TokenScript文件
+     *
+     * 检查合约中的TokenScript URI，下载并存储有效的脚本文件。
+     * 支持多个URI的数组，按顺序检查并返回第一个有效的脚本。
+     *
+     * @param token 代币对象
+     * @param updateFlag 更新标志的LiveData
+     * @return 下载的TokenScript文件
+     */
+    private suspend fun fetchTokenScriptFromContract(
         token: Token?,
         updateFlag: MutableLiveData<Boolean>?,
-    ): Single<File> {
+    ): File = withContext(ioDispatcher) {
         if (token == null) {
-            return Single.fromCallable { File("") }
+            return@withContext File("")
         }
 
-        // Allow for arrays of URI, check each in turn for multiple and return the first valid entry
-        return token.scriptURI
-            .map { uriList: List<String> ->
-                for (uri in uriList) {
-                    // early return for unchanged IPFS
-                    if (matchesExistingScript(token, uri)) {
-                        break // return script unchanged / not found
-                    }
-                    // download each in turn, return first valid script
-                    if (!TextUtils.isEmpty(uri) && updateFlag != null) {
-                        updateFlag.postValue(true)
-                    }
-                    val scriptCandidate = downloadScript(uri, 0)
-                    if (!TextUtils.isEmpty(scriptCandidate.first)) {
-                        return@map Pair<String, Pair<String?, Boolean>>(
-                            uri,
-                            scriptCandidate,
-                        )
-                    }
-                }
-                Pair(
-                    "",
-                    Pair("", false),
-                )
-            }.map { scriptData: Pair<String, Pair<String?, Boolean>> ->
-                storeEntry(
-                    token,
-                    scriptData,
-                )
+        // 支持URI数组，依次检查每个URI并返回第一个有效条目
+        val uriList = token.getScriptURI()
+        for (uri in uriList) {
+            // 对于未更改的IPFS提前返回
+            if (matchesExistingScript(token, uri)) {
+                break // 返回未更改的脚本/未找到
             }
+            // 依次下载每个脚本，返回第一个有效脚本
+            if (!TextUtils.isEmpty(uri) && updateFlag != null) {
+                updateFlag.postValue(true)
+            }
+            val scriptCandidate = downloadScript(uri, 0)
+            if (!TextUtils.isEmpty(scriptCandidate.first)) {
+                val scriptData = Pair<String, Pair<String?, Boolean>>(uri, scriptCandidate)
+                return@withContext storeEntry(token, scriptData)
+            }
+        }
+        // 如果没有找到有效脚本，返回空文件
+        File("")
     }
 
     // Write the TokenScript to Android Storage
@@ -2115,18 +2095,15 @@ class AssetDefinitionService(
     /** @noinspection ResultOfMethodCallIgnored
      */
     @Throws(IOException::class)
-    private fun storeEntry(
-        token: Token,
-        scriptData: Pair<String, Pair<String?, Boolean>>,
-    ): File {
+    private fun storeEntry(token: Token, scriptData: Pair<String, Pair<String?, Boolean>>, ): File {
         if (TextUtils.isEmpty(scriptData.second.first) || scriptData.second.first == TokenDefinition.UNCHANGED_SCRIPT) {
             return File(TokenDefinition.UNCHANGED_SCRIPT) // blank file with UNCHANGED name
         }
 
-        var tempFileKey = token.tsKey
+        var tempFileKey = token.getTSKey()
 
         // ensure url is correct
-        updateScriptURLIfRequired(token.tokenInfo.chainId, token.address, scriptData.first)
+        token.tokenInfo.address?.let { updateScriptURLIfRequired(token.tokenInfo.chainId, it, scriptData.first ?: "") }
 
         if (!checkFileDiff(tempFileKey, scriptData.second)) {
             return File(TokenDefinition.UNCHANGED_SCRIPT)
@@ -2142,7 +2119,7 @@ class AssetDefinitionService(
 
         if (preHash != null) {
             td.attestation?.let {
-                if (token is Attestation && !it.compareIssuerKey(token.issuer)) {
+                if (token is Attestation && !it.compareIssuerKey(token.getIssuer())) {
                     // refuse to download
                     tempStoreFile.delete()
                     return File("")
@@ -2197,14 +2174,7 @@ class AssetDefinitionService(
         scriptURL: String,
     ) {
         val fileUrl = getScriptUrl(chainId, address)
-        if (!Strings.isEmpty(fileUrl) && (
-                Strings.isEmpty(scriptURL) ||
-                    fileUrl.equals(
-                        scriptURL,
-                        ignoreCase = true,
-                    )
-            )
-        ) {
+        if (!Strings.isEmpty(fileUrl) && (Strings.isEmpty(scriptURL) || fileUrl.equals(scriptURL, ignoreCase = true,))) {
             return
         }
 
@@ -2244,7 +2214,7 @@ class AssetDefinitionService(
         try {
             realmManager.getRealmInstance(ASSET_DEFINITION_DB).use { realm ->
                 val entryKey =
-                    token.tsKey // getTSDataKey(token.tokenInfo.chainId, token.tokenInfo.address);
+                    token.getTSKey() // getTSDataKey(token.tokenInfo.chainId, token.tokenInfo.address);
                 val tsf = getTokenScriptFile(token)
 
                 val entry =
@@ -3170,7 +3140,7 @@ class AssetDefinitionService(
                 realm
                     .where(
                         RealmTokenScriptData::class.java,
-                    ).equalTo("instanceKey", token.tsKey)
+                    ).equalTo("instanceKey", token.getTSKey())
                     .findFirst()
             hasDefinition = tsData != null
         }
@@ -3185,7 +3155,7 @@ class AssetDefinitionService(
             val tsData =
                 realm
                     .where(RealmTokenScriptData::class.java)
-                    .equalTo("instanceKey", token.tsKey)
+                    .equalTo("instanceKey", token.getTSKey())
                     .findFirst()
             return (tsData != null && tsData.getViewList().isNotEmpty())
         }
@@ -3203,7 +3173,7 @@ class AssetDefinitionService(
     }
 
     fun getTokenFunctionMap(token: Token): Map<String, TSAction>? {
-        if (token.interfaceSpec == ContractType.ATTESTATION) {
+        if (token.getInterfaceSpec() == ContractType.ATTESTATION) {
             return getAttestationFunctionMap(token)
         }
 
@@ -3213,7 +3183,7 @@ class AssetDefinitionService(
 
     fun getLocalAttributes(
         td: TokenDefinition?,
-        availableActions: Map<BigInteger?, List<String>>,
+        availableActions: Map<BigInteger, List<String>>,
     ): List<Attribute> {
         val attrs: MutableList<Attribute> = ArrayList()
         if (td != null) {
@@ -3231,10 +3201,11 @@ class AssetDefinitionService(
     ): List<Attribute> {
         val attrs: MutableList<Attribute> = ArrayList()
         for ((key, value) in td.getActions().entries) {
-            if (!actions.contains(key) || value.attributes == null) {
+            val attributes = value.attributes
+            if (!actions.contains(key) || attributes == null) {
                 continue
             }
-            attrs.addAll(value.attributes.values)
+            attrs.addAll(attributes.values)
         }
 
         return attrs
@@ -3249,7 +3220,7 @@ class AssetDefinitionService(
      * @param update 更新类型
      * @return tokenId 到允许功能列表的映射 - 注意如果有拒绝消息，我们允许显示该功能
      */
-    suspend fun fetchFunctionMapAsync(
+    private suspend fun fetchFunctionMapAsync(
         token: Token,
         tokenIds: List<BigInteger>,
         type: ContractType,
@@ -3276,8 +3247,9 @@ class AssetDefinitionService(
                                 continue // 如果这不是证明获取，则不包括证明
                             }
 
+                            val exclude = action.exclude
                             val selection: TSSelection? =
-                                if (action.exclude != null) td.getSelection(action.exclude) else null
+                                if (exclude != null) td.getSelection(exclude) else null
 
                             if (selection == null) {
                                 if (!validActions.containsKey(tokenId)) {
@@ -3295,7 +3267,8 @@ class AssetDefinitionService(
 
                                 // 现在评估选择
                                 val exclude: Boolean = EvaluateSelection.evaluate(selection.head, idAttrResults)
-                                if (!exclude || selection.denialMessage != null) {
+                                val denialMessage = selection.denialMessage
+                                if (!exclude || denialMessage != null) {
                                     if (!validActions.containsKey(tokenId)) {
                                         validActions[tokenId] = ArrayList()
                                     }
@@ -3307,21 +3280,31 @@ class AssetDefinitionService(
                 }
                 validActions
             } catch (e: Exception) {
-                Timber.e(e, "获取功能映射失败: ${token.name}")
+                Timber.e(e, "获取功能映射失败: ${token.getName()}")
                 emptyMap()
             }
         }
 
-    // 兼容性方法
-    fun fetchFunctionMap(
+    /**
+     * 获取函数映射（协程版本）
+     *
+     * 获取代币的函数映射，支持异步操作。
+     * 这是协程版本的实现，替代了原来的RxJava版本。
+     *
+     * @param token 代币对象
+     * @param tokenIds 代币ID列表
+     * @param type 合约类型
+     * @param update 更新类型
+     * @return 函数映射结果
+     */
+    suspend fun fetchFunctionMap(
         token: Token,
         tokenIds: List<BigInteger>,
         type: ContractType,
         update: UpdateType?,
-    ): Single<Map<BigInteger, List<String>>> =
-        Single.fromCallable {
-            runBlocking { fetchFunctionMapAsync(token, tokenIds, type, update) }
-        }
+    ): Map<BigInteger, List<String>> = withContext(ioDispatcher) {
+        fetchFunctionMapAsync(token, tokenIds, type, update)
+    }
 
     private fun getAllowedTypes(type: ContractType): List<ActionModifier> {
         val modifiers: MutableList<ActionModifier> = ArrayList<ActionModifier>()
@@ -3352,14 +3335,14 @@ class AssetDefinitionService(
                 "ownerAddress",
                 "ownerAddress",
                 BigInteger.ZERO,
-                token.wallet,
+                token.getWallet(),
             )
         attrs["contractAddress"] =
             TokenScriptResult.Attribute(
                 "contractAddress",
                 "contractAddress",
                 BigInteger.ZERO,
-                token.address,
+                token.getAddress(),
             )
     }
 
@@ -3375,8 +3358,9 @@ class AssetDefinitionService(
                 val tokenId =
                     if (tokenIds != null && !tokenIds.isEmpty()) tokenIds[0] else BigInteger.ZERO
                 val action: TSAction? = td.tokenActions.get(actionName)
+                val exclude = action?.exclude
                 val selection: TSSelection? =
-                    if (action?.exclude != null) td.getSelection(action.exclude) else null
+                    if (exclude != null) td.getSelection(exclude) else null
                 if (selection != null) {
                     // gather list of attribute results
                     val requiredAttrs: List<String> = selection.getRequiredAttrs()
@@ -3458,8 +3442,9 @@ class AssetDefinitionService(
         val requiredAttrs: MutableList<String> = ArrayList()
         for (actionName in actions.keys) {
             val action: TSAction? = actions[actionName]
+            val exclude = action?.exclude
             val selection: TSSelection? =
-                if (action?.exclude != null) td.getSelection(action.exclude) else null
+                if (exclude != null) td.getSelection(exclude) else null
             if (selection != null) {
                 val attrNames: List<String> = selection.getRequiredAttrs()
                 for (attrName in attrNames) {
@@ -3561,7 +3546,7 @@ class AssetDefinitionService(
      * @param token 令牌对象
      * @return 签名描述符
      */
-    suspend fun getSignatureDataAsync(token: Token?): XMLDsigDescriptor? {
+    suspend fun getSignatureDataAsync(token: Token): XMLDsigDescriptor {
         return withContext(ioDispatcher) {
             if (token == null) return@withContext XMLDsigDescriptor()
             val tsf = getTokenScriptFile(token)
@@ -3596,8 +3581,8 @@ class AssetDefinitionService(
     private suspend fun getSignatureDataAsync(
         tsf: TokenScriptFile?,
         chainId: Long,
-        contractAddress: String,
-    ): XMLDsigDescriptor? =
+        contractAddress: String?,
+    ): XMLDsigDescriptor =
         withContext(ioDispatcher) {
             try {
                 var sigDescriptor: XMLDsigDescriptor? =
@@ -3639,23 +3624,39 @@ class AssetDefinitionService(
             }
         }
 
-    // 兼容性方法
-    fun getSignatureData(token: Token?): Single<XMLDsigDescriptor?> =
-        Single.fromCallable {
-            runBlocking { getSignatureDataAsync(token) }
-        }
+    /**
+     * 获取签名数据（协程版本）
+     *
+     * 获取代币的签名数据，支持异步操作。
+     * 这是协程版本的实现，替代了原来的RxJava版本。
+     *
+     * @param token 代币对象
+     * @return 签名描述对象
+     */
+    suspend fun getSignatureData(token: Token): XMLDsigDescriptor = withContext(ioDispatcher) {
+        getSignatureDataAsync(token)
+    }
 
-    fun getSignatureData(
+    /**
+     * 获取签名数据（协程版本）
+     *
+     * 根据链ID和合约地址获取签名数据，支持异步操作。
+     * 这是协程版本的实现，替代了原来的RxJava版本。
+     *
+     * @param chainId 链ID
+     * @param contractAddress 合约地址
+     * @return 签名描述对象
+     */
+    suspend fun getSignatureData(
         chainId: Long,
         contractAddress: String,
-    ): Single<XMLDsigDescriptor?> =
-        Single.fromCallable {
-            runBlocking { getSignatureDataAsync(chainId, contractAddress) }
-        }
+    ): XMLDsigDescriptor? = withContext(ioDispatcher) {
+        getSignatureDataAsync(chainId, contractAddress)
+    }
 
     private fun getScriptUrl(
         chainId: Long,
-        contractAddress: String,
+        contractAddress: String?,
     ): String {
         val entryKey = getTSDataKey(chainId, contractAddress)
         realmManager.getRealmInstance(ASSET_DEFINITION_DB).use { realm ->
@@ -3812,25 +3813,29 @@ class AssetDefinitionService(
     }
 
     private fun updateEventList(eventData: RealmAuxData) {
-        val contractDetails =
-            eventData.instanceKey
-                .split("-".toRegex())
-                .dropLastWhile { it.isEmpty() }
-                .toTypedArray()
-        if (contractDetails.size != 5) return
-        val eventAddress = contractDetails[0]
-        val chainId = contractDetails[1].toLong()
-        val eventId = eventData.functionId
+        eventData.instanceKey?.let { it ->
+            val contractDetails =
+                     it
+                    .split("-".toRegex())
+                    .dropLastWhile { it.isEmpty() }
+                    .toTypedArray()
+            if (contractDetails.size != 5) return
+            val eventAddress = contractDetails[0]
+            val chainId = contractDetails[1].toLong()
+            val eventId = eventData.functionId
 
-        val eventKey: String = EventDefinition.getEventKey(chainId, eventAddress, eventId, null)
-        val ev: EventDefinition? = eventList[eventKey]
-        if (ev != null) {
-            ev.readBlock =
-                BigInteger(
-                    eventData.result,
-                    16,
-                ).add(BigInteger.ONE) // add one so we don't pick up the same event again
+            val eventKey: String = EventDefinition.getEventKey(chainId, eventAddress, eventId, null)
+            val ev: EventDefinition? = eventList[eventKey]
+            if (ev != null) {
+                ev.readBlock =
+                    BigInteger(
+                        eventData.result,
+                        16,
+                    ).add(BigInteger.ONE) // add one so we don't pick up the same event again
+            }
         }
+
+
     }
 
     private fun createAuxData(
@@ -3913,13 +3918,13 @@ class AssetDefinitionService(
         val attrs = StringBuilder()
 
         val definition: TokenDefinition? = getAssetDefinition(token)
-        var label = token.tokenTitle
-        if (definition != null && definition.getTokenName(1) != null) {
+        var label = token.getTokenTitle()
+        if (definition?.getTokenName(1) != null) {
             label = definition.getTokenName(1)
         }
         TokenScriptResult.addPair<String>(attrs, "name", token.tokenInfo.name)
         TokenScriptResult.addPair<String>(attrs, "label", label)
-        TokenScriptResult.addPair<String>(attrs, "symbol", token.symbol)
+        TokenScriptResult.addPair<String>(attrs, "symbol", token.getSymbol())
         TokenScriptResult.addPair<String>(attrs, "_count", count.toString())
         TokenScriptResult.addPair<String>(
             attrs,
@@ -3935,21 +3940,21 @@ class AssetDefinitionService(
         TokenScriptResult.addPair<String>(
             attrs,
             "ownerAddress",
-            Keys.toChecksumAddress(token.wallet),
+            Keys.toChecksumAddress(token.getWallet()),
         )
 
-        if (token.isNonFungible) {
+        if (token.isNonFungible()) {
             // TODO
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 addOpenSeaAttributes(attrs, token, tokenId)
             }
         }
 
-        if (token.isEthereum) {
+        if (token.isEthereum()) {
             TokenScriptResult.addPair<String>(attrs, "balance", token.balance.toString())
         }
 
-        if (token.interfaceSpec == ContractType.ATTESTATION) {
+        if (token.getInterfaceSpec() == ContractType.ATTESTATION) {
             addAttestationAttributes(attrs, token as Attestation, definition)
         }
 
@@ -4016,7 +4021,7 @@ class AssetDefinitionService(
     fun resolveAttrs(
         token: Token,
         td: TokenDefinition?,
-        tokenId: BigInteger?,
+        tokenId: BigInteger,
         extraAttrs: List<Attribute>?,
         itemView: ViewType?,
         update: UpdateType?,
@@ -4060,16 +4065,16 @@ class AssetDefinitionService(
         val att =
             if (action != null && action.modifier == ActionModifier.ATTESTATION) {
                 attnId?.let {
-                    tokensService.getAttestation(token.tokenInfo.chainId, token.address, it)
+                    tokensService.getAttestation(token.tokenInfo.chainId, token.getAddress(), it)
                 } as Attestation
             } else {
                 null
             }
         if (att != null) {
-            if (att.isEAS) {
+            if (att.isEAS()) {
                 // can we rebuild the EasAttestation?
                 val dfe: DefaultFunctionEncoder = DefaultFunctionEncoder()
-                val easAttestation: EasAttestation = att.easAttestation
+                val easAttestation: EasAttestation = att.easAttestation ?: return attrs
                 val inputParam = listOf<org.web3j.abi.datatypes.Type<*>>(easAttestation.getAttestationCore())
                 val coreAttestationHex: String =
                     Numeric.prependHexPrefix(dfe.encodeParameters(inputParam).substring(0x40))
@@ -4097,7 +4102,7 @@ class AssetDefinitionService(
                         "attestationSig",
                         "rawAttestation",
                         BigInteger.ZERO,
-                        att.rawAttestation,
+                        att.getRawAttestation(),
                     ),
                 )
             } else {
@@ -4106,7 +4111,7 @@ class AssetDefinitionService(
                         "attestation",
                         "attestation",
                         BigInteger.ZERO,
-                        Numeric.toHexString(att.attestation),
+                        Numeric.toHexString(att.getAttestation()),
                     ),
                 )
             }
@@ -4120,16 +4125,16 @@ class AssetDefinitionService(
         att: Attestation,
         td: TokenDefinition?,
     ) {
-        if (att.isEAS) {
+        if (att.isEAS()) {
             val dfe: DefaultFunctionEncoder = DefaultFunctionEncoder()
-            val easAttestation: EasAttestation = att.easAttestation
+            val easAttestation: EasAttestation = att.easAttestation ?: return
             val inputParam = listOf<org.web3j.abi.datatypes.Type<*>>(easAttestation.getAttestationCore())
             val coreAttestationHex: String =
                 Numeric.prependHexPrefix(dfe.encodeParameters(inputParam).substring(0x40)) // 0x40?
             TokenScriptResult.addPair<String>(attrs, "attestation", coreAttestationHex)
             val signatureBytes: String = Numeric.toHexString(easAttestation.getSignatureBytes())
             TokenScriptResult.addPair<String>(attrs, "attestationSig", signatureBytes)
-            TokenScriptResult.addPair<String>(attrs, "rawAttestation", att.rawAttestation)
+            TokenScriptResult.addPair<String>(attrs, "rawAttestation", att.getRawAttestation())
 
             // add all the required attributes
             attrs.append(att.addTokenScriptAttributes())
@@ -4137,7 +4142,7 @@ class AssetDefinitionService(
             TokenScriptResult.addPair<String>(
                 attrs,
                 "attestation",
-                Numeric.toHexString(att.attestation),
+                Numeric.toHexString(att.getAttestation()),
             )
         }
     }
@@ -4304,14 +4309,14 @@ class AssetDefinitionService(
         for (rAtt in realmItems) {
             // 从TokensService获取对应的认证对象
             val attn =
-                tokensService.getAttestation(
-                    rAtt.chains[0], // 获取链ID
-                    rAtt.tokenAddress, // 获取代币地址
-                    rAtt.getAttestationID(), // 获取认证ID
-                ) as Attestation
+                    tokensService.getAttestation(
+                        rAtt.getChains().get(0), // 获取链ID
+                        rAtt.getTokenAddress(), // 获取代币地址
+                        rAtt.getAttestationID(), // 获取认证ID
+                    )
 
             // 验证认证对象存在且其集合ID与目标集合ID匹配
-            if (attn.getAttestationCollectionId(td) == scriptCollectionId) {
+            if (attn?.getAttestationCollectionId(td) == scriptCollectionId) {
                 forUpdate.add(rAtt) // 添加到更新列表
             }
         }
@@ -4334,7 +4339,7 @@ class AssetDefinitionService(
      */
     private suspend fun resolveAttrs(
         token: Token,
-        tokenId: BigInteger?,
+        tokenId: BigInteger,
         td: TokenDefinition,
         attrList: List<Attribute>,
         itemView: ViewType?,
@@ -4462,7 +4467,7 @@ class AssetDefinitionService(
                     ).contains("filePath", importFileName)
                     .findFirst()
             if (tsData != null) {
-                cr = ContractLocator(tsData.originTokenAddress, tsData.chainId)
+                cr = ContractLocator(tsData.getOriginTokenAddress(), tsData.getChainId())
             }
         }
         return cr
@@ -4519,7 +4524,7 @@ class AssetDefinitionService(
                                 val origins: ContractInfo? = tokenDef.contracts[tokenDef.holdingToken]
                                 if (origins != null && origins.addresses.isNotEmpty()) {
                                     val tsf = TokenScriptFile(context, file.absolutePath)
-                                    tokenLocators.add(TokenLocator(tokenDef.getTokenName(1), origins, tsf))
+                                    tokenLocators.add(TokenLocator(tokenDef.getTokenName(1).toString(), origins, tsf))
                                 }
                             }
                         } catch (e: SAXException) {
@@ -4560,6 +4565,13 @@ class AssetDefinitionService(
      * @param updateFlag 更新标志
      * @return TokenDefinition 或 null
      */
+    @Deprecated("Use checkServerForScriptAsync", ReplaceWith("checkServerForScriptAsync(token, updateFlag)"))
+    fun checkServerForScript(
+        token: Token?,
+        updateFlag: MutableLiveData<Boolean>?,
+    ): Single<TokenDefinition> =
+        singleFrom { checkServerForScriptAsync(token, updateFlag) ?: TokenDefinition() }
+
     suspend fun checkServerForScriptAsync(
         token: Token?,
         updateFlag: MutableLiveData<Boolean>?,
@@ -4574,7 +4586,7 @@ class AssetDefinitionService(
                 if ((tf != null && tf.exists()) && !isInSecureZone(tf)) {
                     try {
                         val td =
-                            if (checkCachedDefinition(token.tokenInfo.chainId, token.address) != null) {
+                            if (checkCachedDefinition(token.tokenInfo.chainId, token.getAddress()) != null) {
                                 cachedDefinition
                             } else {
                                 val parsed = parseFile(tf.getInputStreamSafe())
@@ -4589,17 +4601,17 @@ class AssetDefinitionService(
                 }
 
                 // 尝试合约 URI，然后服务器
-                val contractFile = fetchTokenScriptFromContract(token, updateFlag).blockingGet()
+                val contractFile = fetchTokenScriptFromContract(token, updateFlag)
                 val serverFile =
                     tryServerIfRequired(
                         contractFile,
-                        token.address.lowercase(Locale.getDefault()),
+                        token.getAddress().lowercase(Locale.getDefault()),
                         token.tokenInfo.chainId,
                     )
 
                 handleNewTSFile(serverFile ?: File(""))
             } catch (e: Exception) {
-                Timber.e(e, "从服务器检查脚本失败: ${token?.name}")
+                Timber.e(e, "从服务器检查脚本失败: ${token?.getName()}")
                 TokenDefinition()
             }
         }
@@ -4719,4 +4731,16 @@ class AssetDefinitionService(
         contractAddress: String,
         function: org.web3j.abi.datatypes.Function,
     ): String? = tokenscriptUtility.callSmartContract(chainId, contractAddress, function)
+
+    private fun <T : Any> singleFrom(block: suspend () -> T): Single<T> =
+        Single.create { emitter ->
+            val job = CoroutineUtils.launchSafely(serviceScope) {
+                try {
+                    emitter.onSuccess(block())
+                } catch (throwable: Throwable) {
+                    emitter.tryOnError(throwable)
+                }
+            }
+            emitter.setCancellable { job.cancel() }
+        }
 }

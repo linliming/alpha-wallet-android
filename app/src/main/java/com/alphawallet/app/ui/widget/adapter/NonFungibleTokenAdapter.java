@@ -12,9 +12,7 @@ import androidx.recyclerview.widget.SortedList;
 
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.TicketRangeElement;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokendata.TokenGroup;
-import com.alphawallet.app.entity.tokens.ERC721Token;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.service.AssetDefinitionService;
 import com.alphawallet.app.service.OpenSeaService;

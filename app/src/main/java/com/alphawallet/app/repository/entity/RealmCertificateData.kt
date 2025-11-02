@@ -8,16 +8,16 @@ import io.realm.annotations.PrimaryKey
 /**
  * Created by JB on 4/02/2020.
  */
-class RealmCertificateData : RealmObject() {
+open class RealmCertificateData : RealmObject() {
     @PrimaryKey
-    private val instanceKey: String? = null // File hash
+    var instanceKey: String? = null // File hash
     var result: String? = null
     var subject: String? = null
-    private var keyName: String? = null
-    private var keyType: String? = null
+    var keyName: String? = null
+    var keyType: String? = null
     var issuer: String? = null
-    private var certificateName: String? = null
-    private var type = 0
+    var certificateName: String? = null
+    var type: Int = 0
 
     fun setFromSig(sig: XMLDsigDescriptor) {
         this.result = sig.result

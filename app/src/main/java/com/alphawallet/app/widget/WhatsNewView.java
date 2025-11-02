@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alphawallet.app.R;
-import com.alphawallet.app.entity.GitHubRelease;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

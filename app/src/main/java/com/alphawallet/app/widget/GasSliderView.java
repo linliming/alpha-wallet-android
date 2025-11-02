@@ -21,7 +21,6 @@ import com.alphawallet.app.R;
 import com.alphawallet.app.entity.EIP1559FeeOracleResult;
 import com.alphawallet.app.ui.widget.entity.GasSettingsCallback;
 import com.alphawallet.app.ui.widget.entity.GasSpeed;
-import com.alphawallet.app.util.BalanceUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.ContractType;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.viewmodel.NFTInfoViewModel;
 import com.alphawallet.app.widget.NFTImageView;

@@ -305,7 +305,7 @@ class HomeViewModel
          * @param wallet 要设置为默认的钱包对象
          */
         private fun onDefaultWallet(wallet: Wallet) {
-            preferenceRepository.setWatchOnly(wallet.watchOnly())
+            preferenceRepository.isWatchOnly = wallet.watchOnly()
             defaultWallet.setValue(wallet)
         }
 
@@ -349,7 +349,7 @@ class HomeViewModel
                     cryptoFunctions = CryptoFunctions()
                 }
                 if (parser == null) {
-                    parser = ParseMagicLink(cryptoFunctions, EthereumNetworkRepository.extraChains())
+                    parser = ParseMagicLink(cryptoFunctions, EthereumNetworkRepository.extraChainsCompat())
                 }
 
                 val data: MagicLinkData = parser!!.parseUniversalLink(importData)
@@ -399,8 +399,15 @@ class HomeViewModel
             launchSafely(
                 onError = { throwable: Throwable? -> this.walletError(throwable) },
             ) {
-                val wallet = fetchWalletsInteract.getWallet(preferenceRepository.getCurrentWalletAddress())
-                updateWalletTitle(context, wallet)
+                val walletAddress = preferenceRepository.currentWalletAddress
+                if (!walletAddress.isNullOrEmpty()) {
+                    val wallet = fetchWalletsInteract.getWallet(walletAddress)
+                    updateWalletTitle(context, wallet)
+                } else {
+                    // 如果没有当前钱包地址，使用默认钱包
+                    val wallet = genericWalletInteract.find()
+                    updateWalletTitle(context, wallet)
+                }
             }
         }
 
@@ -500,9 +507,9 @@ class HomeViewModel
          * 用于控制是否已显示过查找钱包地址的对话框
          */
         var isFindWalletAddressDialogShown: Boolean
-            get() = preferenceRepository.isFindWalletAddressDialogShown()
+            get() = preferenceRepository.isFindWalletAddressDialogShown
             set(isShown) {
-                preferenceRepository.setFindWalletAddressDialogShown(isShown)
+                preferenceRepository.isFindWalletAddressDialogShown = isShown
             }
 
         /**
@@ -728,7 +735,9 @@ class HomeViewModel
          * @param activity 当前活动上下文
          */
         fun showMyAddress(activity: Activity?) {
-            myAddressRouter.open(activity, defaultWallet.getValue())
+            activity?.let {
+                myAddressRouter.open(it, defaultWallet.getValue())
+            }
         }
 
         /**
@@ -737,15 +746,15 @@ class HomeViewModel
          * 如果用户重新安装应用或清除存储，此ID会发生变化
          */
         fun identify() {
-            var uuid: String = preferenceRepository.getUniqueId()
+            var uuid: String? = preferenceRepository.uniqueId
 
-            if (uuid.isEmpty()) {
+            if (uuid.isNullOrEmpty()) {
                 uuid = UUID.randomUUID().toString()
             }
 
-            preferenceRepository.setUniqueId(uuid)
+            preferenceRepository.uniqueId = uuid
 
-            identify(uuid)
+            super.identify(uuid)
         }
 
         /**
@@ -776,7 +785,7 @@ class HomeViewModel
          * 检查是否选择全屏模式
          * @return true如果启用全屏，false如果未启用
          */
-        fun fullScreenSelected(): Boolean = preferenceRepository.getFullScreenState()
+        fun fullScreenSelected(): Boolean = preferenceRepository.fullScreenState
 
         /**
          * 尝试显示应用评分对话框
@@ -794,14 +803,14 @@ class HomeViewModel
          * @return 已显示的更新警告次数
          */
         val updateWarnings: Int
-            get() = preferenceRepository.getUpdateWarningCount()
+            get() = preferenceRepository.updateWarningCount
 
         /**
          * 设置更新警告次数
          * @param warns 警告次数
          */
         fun setUpdateWarningCount(warns: Int) {
-            preferenceRepository.setUpdateWarningCount(warns)
+            preferenceRepository.updateWarningCount = warns
         }
 
         /**
@@ -809,7 +818,7 @@ class HomeViewModel
          * @param time 安装时间戳（秒），会转换为毫秒存储
          */
         fun setInstallTime(time: Int) {
-            preferenceRepository.setInstallTime(time.toLong())
+            preferenceRepository.installTime = time.toLong()
         }
 
         /**
@@ -834,7 +843,7 @@ class HomeViewModel
          * @return 最后访问的Fragment序号
          */
         val lastFragmentId: Int
-            get() = preferenceRepository.getLastFragmentPage()
+            get() = preferenceRepository.lastFragmentPage
 
         /**
          * 尝试显示邮件提示对话框
@@ -850,7 +859,7 @@ class HomeViewModel
             handler: Handler?,
             onSuccessRunnable: Runnable?,
         ) {
-            if (preferenceRepository.getLaunchCount() == 4) {
+            if (preferenceRepository.launchCount == 4) {
                 val emailPromptView: EmailPromptView =
                     EmailPromptView(context, successOverlay, handler, onSuccessRunnable)
                 val emailPromptDialog: BottomSheetDialog = BottomSheetDialog(context)
@@ -1058,7 +1067,7 @@ class HomeViewModel
             if (TextUtils.isEmpty(localeRepository.getUserPreferenceLocale())) {
                 localeRepository.setLocale(context, localeRepository.getActiveLocale())
             }
-            currencyRepository.setDefaultCurrency(preferenceRepository.getDefaultCurrency())
+            currencyRepository.setDefaultCurrency(preferenceRepository.defaultCurrency)
         }
 
         /**
@@ -1173,7 +1182,7 @@ class HomeViewModel
          * @return true如果当前钱包为只读模式，false如果为完整钱包
          */
         val isWatchOnlyWallet: Boolean
-            get() = preferenceRepository.isWatchOnly()
+            get() = preferenceRepository.isWatchOnly
 
         /**
          * 获取当前钱包（私有挂起函数）

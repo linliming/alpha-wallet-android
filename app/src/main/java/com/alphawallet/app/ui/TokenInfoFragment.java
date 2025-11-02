@@ -235,12 +235,12 @@ public class TokenInfoFragment extends BaseFragment {
 
     private void onPortfolioUpdated(TokenPortfolio tokenPortfolio)
     {
-        portfolioBalance.setValue(tokenPortfolio.getBalance());
-        portfolioProfit24Hr.setValue(tokenPortfolio.getProfit24Hrs());
-        portfolioProfitTotal.setValue(tokenPortfolio.getProfitTotal());
-        portfolioShare.setValue(tokenPortfolio.getShare());
-        portfolioAverageCost.setValue(tokenPortfolio.getAverageCost());
-        portfolioPaidFees.setValue(tokenPortfolio.getFees());
+        portfolioBalance.setValue(tokenPortfolio.balance);
+        portfolioProfit24Hr.setValue(tokenPortfolio.profit24Hrs);
+        portfolioProfitTotal.setValue(tokenPortfolio.profitTotal);
+        portfolioShare.setValue(tokenPortfolio.share);
+        portfolioAverageCost.setValue(tokenPortfolio.averageCost);
+        portfolioPaidFees.setValue(tokenPortfolio.fees);
     }
 
     static final OkHttpClient httpClient = new OkHttpClient.Builder()

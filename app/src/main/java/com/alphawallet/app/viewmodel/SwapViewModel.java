@@ -31,7 +31,6 @@ import com.alphawallet.app.service.TransactionSendHandlerInterface;
 import com.alphawallet.app.ui.SelectRouteActivity;
 import com.alphawallet.app.ui.SelectSwapProvidersActivity;
 import com.alphawallet.app.ui.widget.entity.ProgressInfo;
-import com.alphawallet.app.util.BalanceUtils;
 import com.alphawallet.app.util.Hex;
 import com.alphawallet.app.web3.entity.Address;
 import com.alphawallet.app.web3.entity.Web3Transaction;
@@ -419,7 +418,7 @@ public class SwapViewModel extends BaseViewModel  implements TransactionSendHand
 
     public Set<String> getPreferredSwapProviders()
     {
-        return preferenceRepository.getSelectedSwapProviders();
+        return preferenceRepository.selectedSwapProviders;
     }
 
     @Override

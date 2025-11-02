@@ -39,7 +39,10 @@ interface TokenLocalSource {
      * @param token 代币对象
      * @return 保存后的代币对象
      */
-    suspend fun saveToken(wallet: Wallet?, token: Token?): Token?
+    suspend fun saveToken(
+        wallet: Wallet?,
+        token: Token?,
+    ): Token?
 
     /**
      * 保存代币数组
@@ -48,7 +51,10 @@ interface TokenLocalSource {
      * @param items 代币数组
      * @return 保存后的代币数组
      */
-    suspend fun saveTokens(wallet: Wallet?, items: Array<Token?>?): Array<Token?>?
+    suspend fun saveTokens(
+        wallet: Wallet?,
+        items: Array<Token?>?,
+    ): Array<Token?>?
 
     /**
      * 更新代币余额
@@ -63,7 +69,7 @@ interface TokenLocalSource {
         wallet: Wallet?,
         token: Token?,
         balance: BigDecimal?,
-        balanceArray: List<BigInteger?>?
+        balanceArray: List<BigInteger?>?,
     ): Boolean
 
     /**
@@ -74,7 +80,11 @@ interface TokenLocalSource {
      * @param address 代币地址
      * @return 代币对象
      */
-    fun fetchToken(chainId: Long, wallet: Wallet?, address: String?): Token?
+    fun fetchToken(
+        chainId: Long,
+        wallet: Wallet?,
+        address: String?,
+    ): Token?
 
     /**
      * 设置代币启用状态
@@ -83,7 +93,11 @@ interface TokenLocalSource {
      * @param cAddr 合约地址
      * @param isEnabled 是否启用
      */
-    fun setEnable(wallet: Wallet?, cAddr: ContractAddress?, isEnabled: Boolean)
+    fun setEnable(
+        wallet: Wallet?,
+        cAddr: ContractAddress?,
+        isEnabled: Boolean,
+    )
 
     /**
      * 获取代币图片URL
@@ -92,7 +106,10 @@ interface TokenLocalSource {
      * @param address 代币地址
      * @return 图片URL
      */
-    fun getTokenImageUrl(chainId: Long, address: String?): String?
+    fun getTokenImageUrl(
+        chainId: Long,
+        address: String?,
+    ): String?
 
     /**
      * 删除Realm代币
@@ -100,7 +117,10 @@ interface TokenLocalSource {
      * @param wallet 钱包信息
      * @param tcmList 代币卡片元数据列表
      */
-    fun deleteRealmTokens(wallet: Wallet?, tcmList: List<TokenCardMeta?>?)
+    fun deleteRealmTokens(
+        wallet: Wallet?,
+        tcmList: List<TokenCardMeta?>?,
+    )
 
     /**
      * 存储代币URL
@@ -116,7 +136,10 @@ interface TokenLocalSource {
      * @param tokens 代币对象
      * @return 初始化后的代币对象
      */
-    fun initNFTAssets(wallet: Wallet?, tokens: Token?): Token?
+    fun initNFTAssets(
+        wallet: Wallet?,
+        tokens: Token?,
+    ): Token?
 
     /**
      * 获取代币元数据
@@ -127,8 +150,9 @@ interface TokenLocalSource {
      * @return 代币卡片元数据数组
      */
     suspend fun fetchTokenMetas(
-        wallet: Wallet?, networkFilters: List<Long?>?,
-        svs: AssetDefinitionService?
+        wallet: Wallet?,
+        networkFilters: List<Long?>?,
+        svs: AssetDefinitionService?,
     ): Array<TokenCardMeta?>?
 
     /**
@@ -140,8 +164,9 @@ interface TokenLocalSource {
      * @return 代币卡片元数据数组
      */
     suspend fun fetchAllTokenMetas(
-        wallet: Wallet?, networkFilters: List<Long?>?,
-        searchTerm: String?
+        wallet: Wallet?,
+        networkFilters: List<Long?>?,
+        searchTerm: String?,
     ): Array<TokenCardMeta?>?
 
     /**
@@ -153,7 +178,7 @@ interface TokenLocalSource {
      */
     fun fetchTokenMetasForUpdate(
         wallet: Wallet?,
-        networkFilters: List<Long?>?
+        networkFilters: List<Long?>?,
     ): Array<TokenCardMeta?>?
 
     /**
@@ -165,7 +190,7 @@ interface TokenLocalSource {
      */
     suspend fun fetchAllTokensWithNameIssue(
         walletAddress: String?,
-        networkFilters: List<Long?>?
+        networkFilters: List<Long?>?,
     ): Array<Token?>?
 
     /**
@@ -177,7 +202,7 @@ interface TokenLocalSource {
      */
     suspend fun fetchAllTokensWithBlankName(
         walletAddress: String?,
-        networkFilters: List<Long?>?
+        networkFilters: List<Long?>?,
     ): Array<ContractAddress?>?
 
     /**
@@ -187,14 +212,17 @@ interface TokenLocalSource {
      * @param svs 资产定义服务
      * @return 修复的数量
      */
-    suspend fun fixFullNames(wallet: Wallet?, svs: AssetDefinitionService?): Int?
+    suspend fun fixFullNames(
+        wallet: Wallet?,
+        svs: AssetDefinitionService?,
+    ): Int?
 
     /**
      * 更新以太坊价格信息
      *
      * @param ethTickers 以太坊价格映射
      */
-    fun updateEthTickers(ethTickers: Map<Long?, TokenTicker?>?)
+    fun updateEthTickers(ethTickers: MutableMap<Long?, TokenTicker?>?)
 
     /**
      * 更新ERC20代币价格信息
@@ -202,7 +230,10 @@ interface TokenLocalSource {
      * @param chainId 链ID
      * @param erc20Tickers ERC20代币价格映射
      */
-    fun updateERC20Tickers(chainId: Long, erc20Tickers: Map<String?, TokenTicker?>?)
+    fun updateERC20Tickers(
+        chainId: Long,
+        erc20Tickers: MutableMap<String?, TokenTicker?>?,
+    )
 
     /**
      * 移除过期的价格信息
@@ -244,7 +275,10 @@ interface TokenLocalSource {
      * @param wallet 钱包信息
      * @param cAddr 合约地址
      */
-    fun setVisibilityChanged(wallet: Wallet?, cAddr: ContractAddress?)
+    fun setVisibilityChanged(
+        wallet: Wallet?,
+        cAddr: ContractAddress?,
+    )
 
     /**
      * 获取代币启用状态
@@ -266,7 +300,7 @@ interface TokenLocalSource {
         wallet: String?,
         erc721Token: Token?,
         additions: List<BigInteger?>?,
-        removals: List<BigInteger?>?
+        removals: List<BigInteger?>?,
     )
 
     /**
@@ -277,7 +311,12 @@ interface TokenLocalSource {
      * @param tokenId 代币ID
      * @param asset NFT资产
      */
-    fun storeAsset(wallet: String?, token: Token?, tokenId: BigInteger?, asset: NFTAsset?)
+    fun storeAsset(
+        wallet: String?,
+        token: Token?,
+        tokenId: BigInteger?,
+        asset: NFTAsset?,
+    )
 
     /**
      * 获取总价值
@@ -288,7 +327,7 @@ interface TokenLocalSource {
      */
     suspend fun getTotalValue(
         currentAddress: String?,
-        networkFilters: List<Long?>?
+        networkFilters: List<Long?>?,
     ): Pair<Double?, Double?>?
 
     /**
@@ -298,7 +337,10 @@ interface TokenLocalSource {
      * @param erc20Tokens ERC20代币列表
      * @return 价格时间映射
      */
-    fun getTickerTimeMap(chainId: Long, erc20Tokens: List<TokenCardMeta?>?): Map<String?, Long?>?
+    fun getTickerTimeMap(
+        chainId: Long,
+        erc20Tokens: List<TokenCardMeta?>?,
+    ): Map<String?, Long?>?
 
     /**
      * 删除价格信息
@@ -321,7 +363,11 @@ interface TokenLocalSource {
      * @param type 合约类型
      * @return 代币分组
      */
-    fun getTokenGroup(chainId: Long, address: String?, type: ContractType?): TokenGroup?
+    fun getTokenGroup(
+        chainId: Long,
+        address: String?,
+        type: ContractType?,
+    ): TokenGroup?
 
     /**
      * 更新价格信息
@@ -330,7 +376,11 @@ interface TokenLocalSource {
      * @param address 代币地址
      * @param ticker 价格信息
      */
-    fun updateTicker(chainId: Long, address: String?, ticker: TokenTicker?)
+    fun updateTicker(
+        chainId: Long,
+        address: String?,
+        ticker: TokenTicker?,
+    )
 
     /**
      * 存储代币信息
@@ -340,7 +390,11 @@ interface TokenLocalSource {
      * @param type 合约类型
      * @return 存储的代币信息
      */
-    suspend fun storeTokenInfo(wallet: Wallet?, tInfo: TokenInfo?, type: ContractType?): TokenInfo?
+    suspend fun storeTokenInfo(
+        wallet: Wallet?,
+        tInfo: TokenInfo?,
+        type: ContractType?,
+    ): TokenInfo?
 
     /**
      * 获取认证代币
@@ -351,7 +405,12 @@ interface TokenLocalSource {
      * @param attnId 认证ID
      * @return 认证代币
      */
-    fun fetchAttestation(chainId: Long, wallet: Wallet?, address: String?, attnId: String?): Token?
+    fun fetchAttestation(
+        chainId: Long,
+        wallet: Wallet?,
+        address: String?,
+        attnId: String?,
+    ): Token?
 
     /**
      * 获取认证代币列表
@@ -364,7 +423,7 @@ interface TokenLocalSource {
     fun fetchAttestations(
         chainId: Long,
         walletAddress: String?,
-        tokenAddress: String?
+        tokenAddress: String?,
     ): List<Token?>?
 
     /**

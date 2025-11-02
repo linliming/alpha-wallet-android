@@ -43,13 +43,13 @@ public class ApiV1Dialog extends BottomSheetDialog
 
     private void setMethod(Method method)
     {
-        if (method.getCallType().equals(ApiV1.CallType.CONNECT))
+        if (method.callType.equals(ApiV1.CallType.CONNECT))
         {
             toolbar.setTitle(R.string.title_api_v1_connect_to);
             functionButtonBar.setPrimaryButtonText(R.string.action_connect);
             functionButtonBar.setSecondaryButtonText(R.string.dialog_reject);
         }
-        else if (method.getCallType().equals(ApiV1.CallType.SIGN_PERSONAL_MESSAGE))
+        else if (method.callType.equals(ApiV1.CallType.SIGN_PERSONAL_MESSAGE))
         {
             toolbar.setTitle(R.string.dialog_title_sign_transaction);
             functionButtonBar.setPrimaryButtonText(R.string.action_sign);

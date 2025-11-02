@@ -2,7 +2,6 @@ package com.alphawallet.app.ui.widget.entity;
 
 import android.util.Pair;
 
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokendata.TokenGroup;
 import com.alphawallet.app.ui.widget.holder.NFTAssetHolder;
 

@@ -1,0 +1,107 @@
+# Detekt configuration file for AlphaWallet project
+# Simplified configuration for TokenDefinition class
+
+build:
+    maxIssues: 0
+    weights:
+        complexity: 2
+        LongParameterList: 1
+        style: 1
+        comments: 1
+
+processors:
+    active: true
+
+console-reports:
+    active: true
+    exclude:
+        - "ProjectStatisticsReport"
+        - "ComplexityReport"
+        - "NotificationReport"
+        - "FileBasedFindingsReport"
+
+output-reports:
+    active: true
+    exclude:
+        - "TxtOutputReport"
+        - "XmlOutputReport"
+        - "HtmlOutputReport"
+
+config:
+    validation: true
+    warningsAsErrors: false
+    checkExhaustiveness: false
+
+complexity:
+    active: true
+    ComplexCondition:
+        active: true
+        threshold: 4
+    ComplexInterface:
+        active: true
+        threshold: 10
+    CyclomaticComplexMethod:
+        active: true
+        threshold: 15
+    LargeClass:
+        active: true
+        threshold: 600
+    LongMethod:
+        active: true
+        threshold: 60
+    LongParameterList:
+        active: true
+        functionThreshold: 6
+        constructorThreshold: 7
+    NestedBlockDepth:
+        active: true
+        threshold: 4
+    TooManyFunctions:
+        active: true
+        thresholdInFiles: 11
+        thresholdInClasses: 11
+        thresholdInInterfaces: 11
+        thresholdInObjects: 11
+
+style:
+    active: true
+    MagicNumber:
+        active: true
+        ignoreNumbers: ["-1", "0", "1", "2"]
+        ignoreHashCodeFunction: true
+        ignorePropertyDeclaration: true
+        ignoreConstantDeclaration: true
+        ignoreCompanionObjectPropertyDeclaration: true
+        ignoreAnnotation: false
+        ignoreNamedArgument: true
+        ignoreEnums: false
+        ignoreRanges: false
+        ignoreExtensionFunctions: false
+        ignoreAnnotated: []
+    MaxLineLength:
+        active: true
+        maxLineLength: 200
+    NewLineAtEndOfFile:
+        active: true
+    TrailingWhitespace:
+        active: true
+    UnusedImports:
+        active: true
+        ignoreAnnotated: []
+    UnusedPrivateMember:
+        active: true
+        ignoreAnnotated: []
+    RedundantVisibilityModifierRule:
+        active: true
+    ExpressionBodySyntax:
+        active: true
+        includeLineWrapping: true
+    EqualsNullCall:
+        active: true
+    ExplicitItLambdaParameter:
+        active: true
+    UnnecessaryAbstractClass:
+        active: true
+        ignoreAnnotated: []
+    UnnecessaryInheritance:
+        active: true

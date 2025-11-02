@@ -72,16 +72,16 @@ public class ApiV1Activity extends BaseActivity
     private void onDefaultWallet(Wallet wallet)
     {
         Method method = request.getMethod();
-        if (method.getCallType().equals(ApiV1.CallType.CONNECT))
+        if (method.callType.equals(ApiV1.CallType.CONNECT))
         {
             ConnectRequest connectRequest = new ConnectRequest(request.getRequestUrl());
             apiV1Dialog = setupConnectDialog(connectRequest, wallet.address);
             apiV1Dialog.show();
         }
-        else if (method.getCallType().equals(ApiV1.CallType.SIGN_PERSONAL_MESSAGE))
+        else if (method.callType.equals(ApiV1.CallType.SIGN_PERSONAL_MESSAGE))
         {
             SignPersonalMessageRequest signPersonalMessageRequest = new SignPersonalMessageRequest(request.getRequestUrl());
-            if (viewModel.addressMatches(wallet.address, signPersonalMessageRequest.getAddress()))
+            if (viewModel.addressMatches(wallet.address, signPersonalMessageRequest.address))
             {
                 apiV1Dialog = setupSignPersonalMessageDialog(signPersonalMessageRequest, wallet.address);
                 apiV1Dialog.show();

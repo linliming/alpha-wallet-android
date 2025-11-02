@@ -50,7 +50,7 @@ public class AnalyticsService<T> implements AnalyticsServiceType<T>
     @Override
     public void increment(String property)
     {
-        if (preferenceRepository.isAnalyticsEnabled())
+        if (preferenceRepository.isAnalyticsEnabled)
         {
             mixpanelAPI.getPeople().increment(property, 1);
         }
@@ -59,7 +59,7 @@ public class AnalyticsService<T> implements AnalyticsServiceType<T>
     @Override
     public void track(String eventName)
     {
-        if (preferenceRepository.isAnalyticsEnabled())
+        if (preferenceRepository.isAnalyticsEnabled)
         {
             //firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, eventName);
 
@@ -70,7 +70,7 @@ public class AnalyticsService<T> implements AnalyticsServiceType<T>
     @Override
     public void track(String eventName, T event)
     {
-        if (preferenceRepository.isAnalyticsEnabled())
+        if (preferenceRepository.isAnalyticsEnabled)
         {
             AnalyticsProperties analyticsProperties = (AnalyticsProperties) event;
             trackFirebase(analyticsProperties, eventName);
@@ -80,7 +80,7 @@ public class AnalyticsService<T> implements AnalyticsServiceType<T>
 
     private void trackFirebase(AnalyticsProperties analyticsProperties, String eventName)
     {
-        if (preferenceRepository.isAnalyticsEnabled())
+        if (preferenceRepository.isAnalyticsEnabled)
         {
             Bundle props;
             try
@@ -98,7 +98,7 @@ public class AnalyticsService<T> implements AnalyticsServiceType<T>
 
     private void trackMixpanel(AnalyticsProperties analyticsProperties, String eventName)
     {
-        if (preferenceRepository.isAnalyticsEnabled())
+        if (preferenceRepository.isAnalyticsEnabled)
         {
             mixpanelAPI.track(eventName, analyticsProperties.get());
         }
@@ -107,7 +107,7 @@ public class AnalyticsService<T> implements AnalyticsServiceType<T>
     @Override
     public void identify(String uuid)
     {
-        if (preferenceRepository.isAnalyticsEnabled())
+        if (preferenceRepository.isAnalyticsEnabled)
         {
             firebaseAnalytics.setUserId(uuid);
             mixpanelAPI.identify(uuid);
@@ -135,7 +135,7 @@ public class AnalyticsService<T> implements AnalyticsServiceType<T>
     @Override
     public void recordException(ServiceErrorException e)
     {
-        if (preferenceRepository.isCrashReportingEnabled())
+        if (preferenceRepository.isCrashReportingEnabled)
         {
             FirebaseCrashlytics.getInstance().recordException(e);
         }

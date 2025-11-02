@@ -130,7 +130,7 @@ public class TokenListAdapter extends RecyclerView.Adapter<BinderViewHolder> imp
         /*
         This list to identify popular tokens
          */
-        unknownTokenList = Objects.requireNonNull(readContracts()).getMainNet();
+        unknownTokenList = Objects.requireNonNull(readContracts()).mainNet;
 
         setupList(tokenList);
     }

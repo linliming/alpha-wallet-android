@@ -34,7 +34,6 @@ import com.alphawallet.app.entity.TransactionReturn;
 import com.alphawallet.app.entity.UpdateType;
 import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.entity.WalletType;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.entity.tokenscript.TokenScriptRenderCallback;
 import com.alphawallet.app.entity.tokenscript.WebCompletionCallback;
@@ -42,7 +41,6 @@ import com.alphawallet.app.service.GasService;
 import com.alphawallet.app.ui.widget.entity.ActionSheetCallback;
 import com.alphawallet.app.util.DappBrowserUtils;
 import com.alphawallet.app.util.KeyboardUtils;
-import com.alphawallet.app.viewmodel.TokenFunctionViewModel;
 import com.alphawallet.app.web3.OnSetValuesListener;
 import com.alphawallet.app.web3.OnSignPersonalMessageListener;
 import com.alphawallet.app.web3.Web3TokenView;
@@ -547,7 +545,7 @@ public class FunctionActivity extends BaseActivity implements FunctionCallback,
                 R.string.confirm_transaction
         );
         String message = estimate.first.hasError() ?
-                getString(R.string.dialog_message_gas_estimation_failed, estimate.first.getError()) :
+                getString(R.string.dialog_message_gas_estimation_failed, estimate.first.error) :
                 getString(R.string.error_transaction_may_fail);
         alertDialog.setMessage(message);
         alertDialog.setButtonText(R.string.action_proceed);

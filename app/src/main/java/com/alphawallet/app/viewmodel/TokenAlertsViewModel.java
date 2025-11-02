@@ -89,7 +89,7 @@ public class TokenAlertsViewModel extends BaseViewModel {
         Type listType = new TypeToken<List<PriceAlert>>()
         {
         }.getType();
-        String json = preferenceRepository.getPriceAlerts();
+        String json = preferenceRepository.priceAlerts;
         return json.isEmpty() ? new ArrayList<>() : new Gson().fromJson(json, listType);
     }
 
@@ -97,7 +97,7 @@ public class TokenAlertsViewModel extends BaseViewModel {
     {
         Type listType = new TypeToken<List<PriceAlert>>() {}.getType();
         String updatedJson = items.isEmpty() ? "" : new Gson().toJson(items, listType);
-        preferenceRepository.setPriceAlerts(updatedJson);
+        preferenceRepository.priceAlerts = updatedJson;
         priceAlerts.postValue(filterByToken(items));
     }
 }

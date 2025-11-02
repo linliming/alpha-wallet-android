@@ -90,7 +90,6 @@ import com.alphawallet.app.ui.widget.entity.ActionSheetCallback;
 import com.alphawallet.app.ui.widget.entity.DappBrowserSwipeInterface;
 import com.alphawallet.app.ui.widget.entity.DappBrowserSwipeLayout;
 import com.alphawallet.app.ui.widget.entity.ItemClickListener;
-import com.alphawallet.app.util.BalanceUtils;
 import com.alphawallet.app.util.DappBrowserUtils;
 import com.alphawallet.app.util.LocaleUtils;
 import com.alphawallet.app.util.QRParser;
@@ -1587,7 +1586,7 @@ public class DappBrowserFragment extends BaseFragment implements OnSignTransacti
                         if (qrCode == null || checkForMagicLink(qrCode)) return;
 
                         AnalyticsProperties props = new AnalyticsProperties();
-                        QRParser parser = QRParser.getInstance(EthereumNetworkRepository.extraChains());
+                        QRParser parser = QRParser.getInstance(EthereumNetworkRepository.extraChainsCompat());
                         QRResult result = parser.parse(qrCode);
                         switch (result.type)
                         {
@@ -1684,7 +1683,7 @@ public class DappBrowserFragment extends BaseFragment implements OnSignTransacti
     {
         try
         {
-            ParseMagicLink parser = new ParseMagicLink(new CryptoFunctions(), EthereumNetworkRepository.extraChains());
+            ParseMagicLink parser = new ParseMagicLink(new CryptoFunctions(), EthereumNetworkRepository.extraChainsCompat());
             if (parser.parseUniversalLink(data).chainId > 0) //see if it's a valid link
             {
                 //handle magic link import

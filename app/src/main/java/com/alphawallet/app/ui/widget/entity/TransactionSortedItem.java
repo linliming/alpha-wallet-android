@@ -33,7 +33,7 @@ public class TransactionSortedItem extends TimestampSortedItem<TransactionMeta> 
                 }
 
                 // Check if this is a written block replacing a pending block
-                if (value.hash.equals(otherMeta.hash) && otherMeta.getTimeStamp() == value.getTimeStamp()) return 0; // match
+                if (value.hash.equals(otherMeta.hash) && otherMeta.timeStamp == value.timeStamp) return 0; // match
 
                 //we were getting an instance where two transactions went through on the same
                 //block - so the timestamp was the same. The display flickered between the two transactions.
@@ -99,7 +99,7 @@ public class TransactionSortedItem extends TimestampSortedItem<TransactionMeta> 
     @Override
     public Date getTimestamp() {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.setTimeInMillis(value.getTimeStamp());
+        calendar.setTimeInMillis(value.timeStamp);
         return calendar.getTime();
     }
 }

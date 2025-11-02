@@ -41,7 +41,6 @@ import com.alphawallet.app.service.TickerService;
 import com.alphawallet.app.ui.widget.entity.GasSettingsCallback;
 import com.alphawallet.app.ui.widget.entity.GasSpeed;
 import com.alphawallet.app.ui.widget.entity.GasWarningLayout;
-import com.alphawallet.app.util.BalanceUtils;
 import com.alphawallet.app.util.Utils;
 import com.alphawallet.app.viewmodel.GasSettingsViewModel;
 import com.alphawallet.app.widget.GasSliderView;

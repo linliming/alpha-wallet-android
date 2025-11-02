@@ -71,7 +71,7 @@ public class SignDialogViewModel extends BaseViewModel
 
     private void compareToActiveWallet(String signingAddress)
     {
-        String activeWallet = preferenceRepository.getCurrentWalletAddress();
+        String activeWallet = preferenceRepository.currentWalletAddress;
         if (!activeWallet.equalsIgnoreCase(signingAddress))
         {
             message.postValue(new Pair<>(R.string.message_wc_wallet_different_from_active_wallet, R.drawable.ic_red_warning));

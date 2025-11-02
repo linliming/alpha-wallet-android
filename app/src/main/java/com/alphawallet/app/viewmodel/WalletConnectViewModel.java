@@ -25,7 +25,6 @@ import com.alphawallet.app.interact.GenericWalletInteract;
 import com.alphawallet.app.interact.WalletConnectInteract;
 import com.alphawallet.app.repository.EthereumNetworkRepositoryType;
 import com.alphawallet.app.repository.SignRecord;
-import com.alphawallet.app.repository.entity.RealmWCSession;
 import com.alphawallet.app.repository.entity.RealmWCSignElement;
 import com.alphawallet.app.service.AnalyticsServiceType;
 import com.alphawallet.app.service.GasService;

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.alphawallet.app.service.AWHttpServiceWaterfall;
-import com.alphawallet.app.util.ens.AWEnsResolver;
 import com.alphawallet.app.web3j.ens.Contracts;
 import com.alphawallet.app.web3j.ens.EnsResolutionException;
 import com.alphawallet.shadows.ShadowApp;

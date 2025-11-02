@@ -49,7 +49,6 @@ import com.alphawallet.app.entity.SignAuthenticationCallback;
 import com.alphawallet.app.entity.StandardFunctionInterface;
 import com.alphawallet.app.entity.TransactionReturn;
 import com.alphawallet.app.entity.WalletType;
-import com.alphawallet.app.entity.tokens.ERC721Token;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.repository.EthereumNetworkBase;
 import com.alphawallet.app.service.GasService;
@@ -869,12 +868,12 @@ public class TransferTicketDetailActivity extends BaseActivity
                 new Address(token.getAddress()),
                 BigInteger.ZERO,
                 BigInteger.ZERO,
-                estimate.getValue(),
+                estimate.value,
                 -1,
                 Numeric.toHexString(transactionBytes),
                 -1);
 
-        if (estimate.hasError() || estimate.getValue().equals(BigInteger.ZERO))
+        if (estimate.hasError() || estimate.value.equals(BigInteger.ZERO))
         {
             estimateError(estimate, w3tx, transactionBytes, txSendAddress, resolvedAddress);
         }
@@ -985,7 +984,7 @@ public class TransferTicketDetailActivity extends BaseActivity
             R.string.confirm_transaction
         );
         String message = estimate.hasError() ?
-            getString(R.string.dialog_message_gas_estimation_failed, estimate.getError()) :
+            getString(R.string.dialog_message_gas_estimation_failed, estimate.error) :
             getString(R.string.error_transaction_may_fail);
         dialog.setMessage(message);
         dialog.setButtonText(R.string.action_proceed);

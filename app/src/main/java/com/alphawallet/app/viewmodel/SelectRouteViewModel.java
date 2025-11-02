@@ -104,7 +104,7 @@ public class SelectRouteViewModel extends BaseViewModel
 
     public Set<String> getPreferredExchanges()
     {
-        return preferenceRepository.getSelectedSwapProviders();
+        return preferenceRepository.selectedSwapProviders;
     }
 
     @Override

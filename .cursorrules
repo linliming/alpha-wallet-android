@@ -1,0 +1,333 @@
+# AlphaWallet Android项目编码规范
+
+## 项目概述
+AlphaWallet是一个开源的以太坊钱包应用，使用Kotlin和Java混合开发。项目采用MVVM架构模式，使用Android Jetpack组件。
+
+## 代码风格规范
+
+### 1. 语言使用规范
+- **新代码优先使用Kotlin**：所有新功能必须使用Kotlin编写
+- **Java代码逐步迁移**：现有Java代码逐步迁移到Kotlin
+- **协程优先**：异步操作优先使用Kotlin协程，避免RxJava
+- **空安全**：充分利用Kotlin的空安全特性
+
+### 2. 命名规范
+
+#### 包命名
+```
+com.alphawallet.app.{module}
+- service: 服务层
+- repository: 数据仓库层
+- viewmodel: 视图模型层
+- ui: 用户界面层
+- entity: 数据实体
+- util: 工具类
+- di: 依赖注入
+- network: 网络层
+- walletconnect: 钱包连接
+```
+
+#### 类命名
+- **Activity**: `{Feature}Activity` (如: `MainActivity`, `AddTokenActivity`)
+- **Fragment**: `{Feature}Fragment` (如: `WalletFragment`, `SettingsFragment`)
+- **ViewModel**: `{Feature}ViewModel` (如: `WalletViewModel`, `TokenViewModel`)
+- **Repository**: `{Feature}Repository` (如: `WalletRepository`, `TokenRepository`)
+- **Service**: `{Feature}Service` (如: `TokensService`, `KeyService`)
+- **Entity**: `{Feature}` (如: `Wallet`, `Token`, `Transaction`)
+- **Interface**: `{Feature}Interface` 或 `{Feature}Callback` (如: `AuthenticationCallback`)
+
+#### 变量命名
+- **常量**: `UPPER_SNAKE_CASE` (如: `DEFAULT_KEY_STRENGTH`, `AUTHENTICATION_DURATION_SECONDS`)
+- **变量**: `camelCase` (如: `currentWallet`, `authLevel`)
+- **私有变量**: 使用`private`修饰符
+- **静态变量**: 使用`companion object` (Kotlin) 或 `static` (Java)
+
+#### 方法命名
+- **动词开头**: `createWallet()`, `importToken()`, `signTransaction()`
+- **布尔方法**: `isValid()`, `hasPermission()`, `canSign()`
+- **获取方法**: `getWallet()`, `fetchTokens()`, `loadBalance()`
+- **设置方法**: `setWallet()`, `updateToken()`, `saveSettings()`
+
+### 3. 代码格式规范
+
+#### 缩进和空格
+- **缩进**: 4个空格 (不使用Tab)
+- **行长度**: 最大200字符 (根据.editorconfig)
+- **换行**: 在操作符后换行，保持可读性
+
+#### 注释规范
+- **类注释**: 使用KDoc格式，包含功能描述和作者信息
+- **方法注释**: 描述方法功能、参数、返回值
+- **复杂逻辑**: 对复杂业务逻辑添加详细注释
+- **中文注释**: 优先使用中文注释，提高可读性
+
+```kotlin
+/**
+ * KeyService - 密钥管理服务类
+ * 
+ * 这是AlphaWallet中最重要的安全组件，负责管理所有与密钥相关的操作。
+ * 主要功能包括：
+ * 1. HD钱包密钥生成与管理
+ * 2. 密钥加密存储
+ * 3. 数字签名服务
+ * 4. 身份验证管理
+ * 
+ * @param context Android上下文
+ * @param analyticsService 分析服务
+ * 
+ * @author AlphaWallet Team
+ * @since 2024
+ */
+class KeyService(
+    private val context: Context,
+    private val analyticsService: AnalyticsServiceType<AnalyticsProperties>
+) {
+    /**
+     * 创建新的HD密钥
+     * 
+     * @param callingActivity 调用的Activity
+     * @param callback 创建完成后的回调接口
+     */
+    fun createNewHDKey(callingActivity: Activity, callback: CreateWalletCallbackInterface) {
+        // 实现代码
+    }
+}
+```
+
+### 4. 架构规范
+
+#### MVVM架构
+```
+UI层 (Activity/Fragment)
+    ↓ (LiveData/StateFlow)
+ViewModel层
+    ↓ (Repository)
+Repository层
+    ↓ (API/Database)
+数据层 (API/本地存储)
+```
+
+#### 依赖注入
+- 使用Hilt进行依赖注入
+- 所有Service、Repository、ViewModel通过DI注入
+- 避免直接实例化依赖
+
+#### 数据流
+- **单向数据流**: UI → ViewModel → Repository → Data
+- **响应式编程**: 使用LiveData、StateFlow、协程
+- **错误处理**: 统一的错误处理机制
+
+### 5. 安全规范
+
+#### 密钥管理
+- **硬件安全**: 优先使用TEE/StrongBox
+- **加密存储**: 敏感数据必须加密存储
+- **内存安全**: 敏感数据及时从内存清除
+- **传输安全**: 网络传输使用HTTPS
+
+#### 代码安全
+- **输入验证**: 所有用户输入必须验证
+- **权限检查**: 运行时权限检查
+- **异常处理**: 完善的异常处理机制
+- **日志安全**: 避免记录敏感信息
+
+### 6. 性能规范
+
+#### 内存管理
+- **避免内存泄漏**: 正确管理生命周期
+- **图片优化**: 使用Glide加载图片
+- **列表优化**: RecyclerView使用ViewHolder模式
+- **协程管理**: 正确管理协程作用域
+
+#### 网络优化
+- **缓存策略**: 合理使用缓存
+- **请求合并**: 避免频繁的网络请求
+- **错误重试**: 网络错误的重试机制
+- **离线支持**: 关键功能的离线支持
+
+### 7. 测试规范
+
+#### 单元测试
+- **ViewModel测试**: 所有ViewModel必须有单元测试
+- **Repository测试**: 数据层必须有测试
+- **工具类测试**: 工具类必须有测试
+- **覆盖率**: 核心功能测试覆盖率>80%
+
+#### UI测试
+- **关键流程**: 钱包创建、转账等关键流程
+- **兼容性**: 不同设备和Android版本
+- **无障碍**: 无障碍功能测试
+
+### 8. 文档规范
+
+#### 代码文档
+- **README**: 项目根目录必须有README
+- **API文档**: 公共API必须有文档
+- **架构文档**: 系统架构必须有文档
+- **部署文档**: 部署流程必须有文档
+
+#### 注释规范
+- **功能说明**: 每个类和方法的功能说明
+- **参数说明**: 参数的含义和约束
+- **返回值**: 返回值的含义和格式
+- **异常说明**: 可能抛出的异常
+
+### 9. 版本控制规范
+
+#### 提交信息
+```
+feat: 添加新功能
+fix: 修复bug
+docs: 更新文档
+style: 代码格式调整
+refactor: 代码重构
+test: 添加测试
+chore: 构建过程或辅助工具的变动
+```
+
+#### 分支管理
+- **main**: 主分支，稳定版本
+- **develop**: 开发分支
+- **feature/xxx**: 功能分支
+- **hotfix/xxx**: 紧急修复分支
+
+### 10. 特定模块规范
+
+#### Service层规范
+- **单一职责**: 每个Service只负责一个领域
+- **异步处理**: 使用协程处理异步操作
+- **错误处理**: 统一的错误处理机制
+- **生命周期**: 正确管理Service生命周期
+
+#### Repository层规范
+- **数据抽象**: 提供统一的数据访问接口
+- **缓存策略**: 合理的数据缓存策略
+- **离线支持**: 关键数据的离线支持
+- **数据一致性**: 确保数据的一致性
+
+#### UI层规范
+- **响应式**: 使用LiveData/StateFlow
+- **状态管理**: 清晰的状态管理
+- **用户反馈**: 及时的用户操作反馈
+- **无障碍**: 支持无障碍功能
+
+### 11. 工具和配置
+
+#### 代码质量工具
+- **Detekt**: Kotlin代码质量检查
+- **Lint**: Android代码质量检查
+- **Ktlint**: Kotlin代码格式化
+- **Jacoco**: 代码覆盖率检查
+
+#### IDE配置
+- **Android Studio**: 推荐使用最新版本
+- **插件**: 安装Kotlin、Hilt等必要插件
+- **设置**: 导入项目的代码风格设置
+
+### 12. 常见模式
+
+#### 协程使用模式
+```kotlin
+// 正确的协程使用
+viewModelScope.launch {
+    try {
+        val result = repository.getData()
+        _uiState.value = UiState.Success(result)
+    } catch (e: Exception) {
+        _uiState.value = UiState.Error(e.message)
+    }
+}
+```
+
+#### 错误处理模式
+```kotlin
+// 统一的错误处理
+sealed class Result<out T> {
+    data class Success<T>(val data: T) : Result<T>()
+    data class Error(val message: String) : Result<Nothing>()
+}
+
+fun handleResult(result: Result<Data>) {
+    when (result) {
+        is Result.Success -> {
+            // 处理成功结果
+        }
+        is Result.Error -> {
+            // 处理错误
+        }
+    }
+}
+```
+
+#### 依赖注入模式
+```kotlin
+@HiltViewModel
+class WalletViewModel @Inject constructor(
+    private val walletRepository: WalletRepository,
+    private val analyticsService: AnalyticsService
+) : ViewModel() {
+    // ViewModel实现
+}
+```
+
+### 13. 禁止事项
+
+#### 代码质量
+- ❌ 不要使用硬编码的字符串
+- ❌ 不要忽略异常
+- ❌ 不要使用魔法数字
+- ❌ 不要使用过长的方法
+- ❌ 不要使用过深的嵌套
+
+#### 安全事项
+- ❌ 不要在日志中记录敏感信息
+- ❌ 不要使用不安全的加密算法
+- ❌ 不要忽略权限检查
+- ❌ 不要使用不安全的网络传输
+
+#### 性能事项
+- ❌ 不要在主线程执行耗时操作
+- ❌ 不要创建不必要的对象
+- ❌ 不要忽略内存泄漏
+- ❌ 不要忽略网络优化
+
+### 14. 推荐事项
+
+#### 代码质量
+- ✅ 使用Kotlin的空安全特性
+- ✅ 使用协程处理异步操作
+- ✅ 使用密封类处理状态
+- ✅ 使用数据类简化代码
+- ✅ 使用扩展函数提高可读性
+
+#### 架构设计
+- ✅ 遵循MVVM架构模式
+- ✅ 使用依赖注入管理依赖
+- ✅ 使用Repository模式
+- ✅ 使用单向数据流
+- ✅ 使用响应式编程
+
+#### 安全设计
+- ✅ 使用Android Keystore存储密钥
+- ✅ 使用硬件安全模块
+- ✅ 实现完善的权限检查
+- ✅ 使用HTTPS进行网络传输
+- ✅ 实现安全的错误处理
+
+### 15. 项目特定规范
+
+#### AlphaWallet特定规范
+- **钱包安全**: 所有钱包相关操作必须经过安全验证
+- **多链支持**: 代码必须考虑多链兼容性
+- **用户隐私**: 严格保护用户隐私和数据
+- **国际化**: 支持多语言，使用资源文件
+- **无障碍**: 支持无障碍功能，提高可访问性
+
+#### 区块链特定规范
+- **地址验证**: 所有以太坊地址必须验证格式
+- **交易签名**: 交易签名必须使用安全的签名算法
+- **Gas估算**: 提供准确的Gas估算
+- **网络切换**: 支持多网络切换
+- **错误处理**: 区块链操作的特殊错误处理
+
+这个编码规范确保了AlphaWallet项目的代码质量、安全性和可维护性，同时保持了与Android开发最佳实践的一致性。 

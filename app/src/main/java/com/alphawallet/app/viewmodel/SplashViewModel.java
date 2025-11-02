@@ -96,7 +96,7 @@ public class SplashViewModel extends BaseViewModel
             wallet.authLevel = authLevel;
             fetchWalletsInteract.storeWallet(wallet)
                 .map(w -> {
-                    preferenceRepository.setCurrentWalletAddress(w.address);
+                    preferenceRepository.currentWalletAddress = w.address;
                     return w;
                 })
                 .subscribeOn(Schedulers.io())
@@ -158,23 +158,23 @@ public class SplashViewModel extends BaseViewModel
 
     public void setDefaultBrowser()
     {
-        preferenceRepository.setActiveBrowserNetwork(MAINNET_ID);
+        preferenceRepository.activeBrowserNetwork = MAINNET_ID;
     }
 
     public long getInstallTime()
     {
-        return preferenceRepository.getInstallTime();
+        return preferenceRepository.installTime;
     }
 
     public void setInstallTime(long time)
     {
-        preferenceRepository.setInstallTime(time);
+        preferenceRepository.installTime = time;
     }
 
     public void doWalletStartupActions(Wallet wallet)
     {
         preferenceRepository.logIn(wallet.address);
-        preferenceRepository.setCurrentWalletAddress(wallet.address);
-        preferenceRepository.setWatchOnly(wallet.watchOnly());
+        preferenceRepository.currentWalletAddress = wallet.address;
+        preferenceRepository.isWatchOnly = wallet.watchOnly();
     }
 }

@@ -14,7 +14,6 @@ import com.alphawallet.app.interact.GenericWalletInteract;
 import com.alphawallet.app.repository.TokenRepository;
 import com.alphawallet.app.repository.WalletItem;
 import com.alphawallet.app.service.AnalyticsServiceType;
-import com.alphawallet.app.util.ens.AWEnsResolver;
 import com.alphawallet.app.util.ens.EnsResolver;
 
 import javax.annotation.Nullable;

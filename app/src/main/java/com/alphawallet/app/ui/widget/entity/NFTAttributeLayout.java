@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alphawallet.app.R;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.opensea.OpenSeaAsset;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.ui.widget.adapter.TSAttributesAdapter;

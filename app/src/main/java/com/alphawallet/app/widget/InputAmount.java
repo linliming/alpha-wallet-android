@@ -20,15 +20,12 @@ import com.alphawallet.app.repository.TokensRealmSource;
 import com.alphawallet.app.repository.entity.RealmGasSpread;
 import com.alphawallet.app.repository.entity.RealmToken;
 import com.alphawallet.app.repository.entity.RealmTokenTicker;
-import com.alphawallet.app.service.AssetDefinitionService;
 import com.alphawallet.app.service.TickerService;
 import com.alphawallet.app.service.TokensService;
 import com.alphawallet.app.ui.widget.entity.AmountReadyCallback;
 import com.alphawallet.app.ui.widget.entity.NumericInput;
-import com.alphawallet.app.util.BalanceUtils;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.web3j.protocol.Web3j;
 
 import java.math.BigDecimal;

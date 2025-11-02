@@ -189,8 +189,10 @@ class TokenDefinition {
         val av = activityCards[activityCardName]
         val ev = EventDefinition()
         ev.contract = contracts[holdingToken]
-        ev.filter = av!!.activityFilter
-        ev.type = namedTypeLookup[av.eventName]
+        if (av != null) {
+            ev.filter = av.activityFilter
+            ev.type = namedTypeLookup[av.eventName]
+        }
         ev.activityName = activityCardName
         ev.parentAttribute = null
         ev.select = null
@@ -1280,7 +1282,7 @@ class TokenDefinition {
                     tsOrigins =
                         TSOrigins
                             .Builder(TSOriginType.Event)
-                            .name(ev.type.name)
+                            .name(ev.type?.name)
                             .event(ev)
                             .build()
                 }
@@ -1522,8 +1524,8 @@ class TokenDefinition {
             when (input.localName) {
                 "data" -> processDataInputs(fDefinition, input)
                 "to", "value" -> {
-                    if (fDefinition.eTransaction == null) fDefinition.eTransaction = EthereumTransaction()
-                    fDefinition.eTransaction?.let {
+                    if (fDefinition.tx == null) fDefinition.tx = EthereumTransaction()
+                    fDefinition.tx?.let {
                         it.args[input.localName] = parseTxTag(input)
                     }
                 }

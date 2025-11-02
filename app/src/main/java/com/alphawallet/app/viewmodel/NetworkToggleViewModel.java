@@ -108,6 +108,6 @@ public class NetworkToggleViewModel extends BaseViewModel
 
     public void setTestnetEnabled(boolean enabled)
     {
-        preferenceRepository.setTestnetEnabled(enabled);
+        preferenceRepository.isTestnetEnabled = enabled;
     }
 }

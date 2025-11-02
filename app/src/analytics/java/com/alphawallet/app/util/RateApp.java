@@ -19,7 +19,7 @@ public class RateApp {
     // should be shown on 5th run or after the first transaction (afterTransaction == true)
     static public void showRateTheApp(Activity context, PreferenceRepositoryType preferenceRepository, boolean afterTransaction) {
         if (!Utils.verifyInstallerId(context)) return;
-        if ((preferenceRepository.getLaunchCount() == 6 || afterTransaction) && !preferenceRepository.getRateAppShown()) {
+        if ((preferenceRepository.launchCount == 6 || afterTransaction) && !preferenceRepository.rateAppShown) {
             View contentView = LayoutInflater.from(context).inflate(R.layout.layout_rate_dialog, null, false);
             final RatingBar ratingBar = contentView.findViewById(R.id.rating_bar);
 

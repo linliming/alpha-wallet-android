@@ -79,7 +79,7 @@ class TokenScriptFile : File {
     val isValidTokenScript: Boolean
         get() = active || resourceFile
 
-    fun fileUnchanged(fd: TokenScriptFileData?): Boolean = fd?.sigDescriptor != null && fd.hash == calcMD5() && fd.sigDescriptor.result == "pass"
+    fun fileUnchanged(fd: TokenScriptFileData?): Boolean = fd?.sigDescriptor != null && fd.hash == calcMD5() && fd.sigDescriptor!!.result == "pass"
 
     val isDebug: Boolean
         get() {

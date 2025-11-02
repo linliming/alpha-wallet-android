@@ -112,9 +112,9 @@ public class ActivityFragment extends BaseFragment implements View.OnClickListen
             if (realmTransactions.size() == 0) return;
             for (RealmTransaction item : realmTransactions)
             {
-                if (viewModel.getTokensService().getNetworkFilters().contains(item.getChainId()))
+                if (viewModel.getTokensService().getNetworkFilters().contains(item.chainId))
                 {
-                    TransactionMeta newMeta = new TransactionMeta(item.getHash(), item.getTimeStamp(), item.getTo(), item.getChainId(), item.getBlockNumber());
+                    TransactionMeta newMeta = new TransactionMeta(item.hash, item.timeStamp, item.to, item.chainId, item.blockNumber);
                     metas.add(newMeta);
                     lastUpdateTime = newMeta.getTimeStampSeconds() + 1;
                 }
@@ -165,7 +165,7 @@ public class ActivityFragment extends BaseFragment implements View.OnClickListen
         if (transfers != null && transfers.size() > 0)
         {
             //list of transfers, descending in time to give ordered list
-            long nextTransferTime = transfers.size() == 1 ? tm.getTimeStamp() : tm.getTimeStamp() - 1; // if there's only 1 transfer, keep the transaction timestamp
+            long nextTransferTime = transfers.size() == 1 ? tm.timeStamp : tm.timeStamp - 1; // if there's only 1 transfer, keep the transaction timestamp
             for (RealmTransfer rt : transfers)
             {
                 TokenTransferData ttd = new TokenTransferData(rt.getHash(), tm.chainId,

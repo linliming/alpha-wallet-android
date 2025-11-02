@@ -7,8 +7,6 @@ import com.alphawallet.app.entity.tokens.Token
 import com.alphawallet.app.service.KeyService
 import com.alphawallet.app.util.BalanceUtils
 
-// com.alphawallet.app.entity.tokens
-
 class Wallet : Parcelable {
     @JvmField
     val address: String?
@@ -102,7 +100,7 @@ class Wallet : Parcelable {
 
     fun setWalletBalance(token: Token): Boolean {
         balanceSymbol = if (token.tokenInfo != null) token.tokenInfo.symbol else "ETH"
-        val newBalance = token.fixedFormattedBalance
+        val newBalance = token.getFixedFormattedBalance()
         if (newBalance == balance) {
             return false
         } else {

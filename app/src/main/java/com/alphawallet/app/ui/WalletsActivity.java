@@ -69,7 +69,7 @@ public class WalletsActivity extends BaseActivity implements
         SyncCallback
 {
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final long balanceChain = EthereumNetworkRepository.getOverrideToken().chainId;
+    private final long balanceChain = EthereumNetworkRepository.getOverrideTokenCompat().chainId;
     private WalletsViewModel viewModel;
     private RecyclerView list;
     private SystemView systemView;

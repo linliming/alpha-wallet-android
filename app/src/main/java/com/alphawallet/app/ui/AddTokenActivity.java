@@ -41,7 +41,6 @@ import com.alphawallet.app.ui.widget.adapter.TokensAdapter;
 import com.alphawallet.app.ui.widget.entity.AddressReadyCallback;
 import com.alphawallet.app.util.QRParser;
 import com.alphawallet.app.util.Utils;
-import com.alphawallet.app.viewmodel.AddTokenViewModel;
 import com.alphawallet.app.widget.AWBottomSheetDialog;
 import com.alphawallet.app.widget.AWalletAlertDialog;
 import com.alphawallet.app.widget.FunctionButtonBar;
@@ -154,7 +153,7 @@ public class AddTokenActivity extends BaseActivity implements AddressReadyCallba
 
         setTitle(R.string.empty);
 
-        setupNetwork(EthereumNetworkRepository.getOverrideToken().chainId);
+        setupNetwork(EthereumNetworkRepository.getOverrideTokenCompat().chainId);
         viewModel.prepare();
 
         if ( getIntent().getStringExtra(C.EXTRA_QR_CODE) != null) {
@@ -464,7 +463,7 @@ public class AddTokenActivity extends BaseActivity implements AddressReadyCallba
                         }
                         else //try magiclink
                         {
-                            ParseMagicLink magicParser = new ParseMagicLink(new CryptoFunctions(), EthereumNetworkRepository.extraChains());
+                            ParseMagicLink magicParser = new ParseMagicLink(new CryptoFunctions(), EthereumNetworkRepository.extraChainsCompat());
                             try
                             {
                                 if (magicParser.parseUniversalLink(barcode).chainId > 0) //see if it's a valid link

@@ -18,7 +18,6 @@ import com.alphawallet.app.C;
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.StandardFunctionInterface;
 import com.alphawallet.app.entity.Wallet;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.ui.widget.OnAssetClickListener;
 import com.alphawallet.app.ui.widget.adapter.Erc1155AssetListAdapter;

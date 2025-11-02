@@ -108,7 +108,7 @@ public abstract class NetworkBaseActivity extends BaseActivity implements TestNe
             }
         });
 
-        boolean testnetEnabled = preferenceRepositoryType.isTestnetEnabled();
+        boolean testnetEnabled = preferenceRepositoryType.isTestnetEnabled;
         testnetSwitch.setChecked(testnetEnabled);
         toggleListVisibility(testnetEnabled);
         initTestNetDialog(this);

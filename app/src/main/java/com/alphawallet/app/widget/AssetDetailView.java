@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.ActionSheetInterface;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.util.Utils;
 

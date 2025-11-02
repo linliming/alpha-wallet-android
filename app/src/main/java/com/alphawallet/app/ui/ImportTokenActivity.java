@@ -24,17 +24,13 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.alphawallet.app.R;
-import com.alphawallet.app.entity.CryptoFunctions;
 import com.alphawallet.app.entity.ErrorEnvelope;
 import com.alphawallet.app.entity.NetworkInfo;
 import com.alphawallet.app.entity.SignAuthenticationCallback;
 import com.alphawallet.app.entity.tokendata.TokenTicker;
 import com.alphawallet.app.entity.tokens.Token;
-import com.alphawallet.app.repository.EthereumNetworkRepository;
 import com.alphawallet.app.router.HomeRouter;
 import com.alphawallet.app.service.TickerService;
-import com.alphawallet.app.util.Utils;
-import com.alphawallet.app.viewmodel.ImportTokenViewModel;
 import com.alphawallet.app.web3.Web3TokenView;
 import com.alphawallet.app.web3.entity.PageReadyCallback;
 import com.alphawallet.app.widget.AWalletAlertDialog;
@@ -45,7 +41,6 @@ import com.alphawallet.hardware.SignatureFromKey;
 import com.alphawallet.token.entity.MagicLinkData;
 import com.alphawallet.token.entity.TicketRange;
 import com.alphawallet.token.tools.Convert;
-import com.alphawallet.token.tools.ParseMagicLink;
 
 import java.math.BigDecimal;
 

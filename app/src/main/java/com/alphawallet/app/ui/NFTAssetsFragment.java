@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.Wallet;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.service.AssetDefinitionService;
 import com.alphawallet.app.ui.widget.OnAssetClickListener;

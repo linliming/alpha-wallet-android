@@ -29,7 +29,6 @@ import com.alphawallet.app.service.TokensService;
 import com.alphawallet.app.ui.GasSettingsActivity;
 import com.alphawallet.app.ui.widget.entity.GasSpeed;
 import com.alphawallet.app.ui.widget.entity.GasWidgetInterface;
-import com.alphawallet.app.util.BalanceUtils;
 import com.alphawallet.app.util.Utils;
 import com.alphawallet.app.web3.entity.Web3Transaction;
 

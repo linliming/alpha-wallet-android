@@ -42,32 +42,32 @@ public class AdvancedSettingsViewModel extends BaseViewModel {
 
     public void setFullScreenState(boolean state)
     {
-        preferenceRepository.setFullScreenState(state);
+        preferenceRepository.fullScreenState = state;
     }
 
     public void toggle1559Transactions(boolean toggleState)
     {
-        preferenceRepository.setUse1559Transactions(toggleState);
+        preferenceRepository.use1559Transactions = toggleState;
     }
 
     public boolean get1559TransactionsState()
     {
-        return preferenceRepository.getUse1559Transactions();
+        return preferenceRepository.use1559Transactions;
     }
 
     public boolean getDeveloperOverrideState()
     {
-        return preferenceRepository.getDeveloperOverride();
+        return preferenceRepository.developerOverride;
     }
 
     public void toggleDeveloperOverride(boolean toggleState)
     {
-        preferenceRepository.setDeveloperOverride(toggleState);
+        preferenceRepository.developerOverride = toggleState;
     }
 
     public boolean getFullScreenState()
     {
-        return preferenceRepository.getFullScreenState();
+        return preferenceRepository.fullScreenState;
     }
 
     public void blankFilterSettings()
@@ -87,11 +87,11 @@ public class AdvancedSettingsViewModel extends BaseViewModel {
 
     public void toggleUseViewer(boolean state)
     {
-        preferenceRepository.setUseTSViewer(state);
+        preferenceRepository.useTSViewer = state;
     }
 
     public boolean getTokenScriptViewerState()
     {
-        return preferenceRepository.getUseTSViewer();
+        return preferenceRepository.useTSViewer;
     }
 }

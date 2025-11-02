@@ -40,14 +40,12 @@ import com.alphawallet.app.entity.TransactionReturn;
 import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.entity.WalletType;
 import com.alphawallet.app.entity.analytics.ActionSheetSource;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.repository.TokenRepository;
 import com.alphawallet.app.service.GasService;
 import com.alphawallet.app.ui.widget.entity.ActionSheetCallback;
 import com.alphawallet.app.util.ShortcutUtils;
 import com.alphawallet.app.viewmodel.DappBrowserViewModel;
-import com.alphawallet.app.viewmodel.TokenFunctionViewModel;
 import com.alphawallet.app.web3.OnEthCallListener;
 import com.alphawallet.app.web3.OnSignMessageListener;
 import com.alphawallet.app.web3.OnSignPersonalMessageListener;
@@ -356,7 +354,7 @@ public class TokenScriptJsActivity extends BaseActivity implements StandardFunct
                 R.string.confirm_transaction
         );
         String message = estimate.first.hasError() ?
-                getString(R.string.dialog_message_gas_estimation_failed, estimate.first.getError()) :
+                getString(R.string.dialog_message_gas_estimation_failed, estimate.first.error) :
                 getString(R.string.error_transaction_may_fail);
         dialog.setMessage(message);
         dialog.setButtonText(R.string.action_proceed);

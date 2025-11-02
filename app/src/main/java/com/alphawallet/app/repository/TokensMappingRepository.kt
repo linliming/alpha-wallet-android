@@ -10,22 +10,22 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 class TokensMappingRepository(private val context: Context) : TokensMappingRepositoryType {
-    private var tokenMap: MutableMap<String, TokenGroup>? = null
-    private var contractMappings: MutableMap<String, ContractAddress>? = null
+    private lateinit var tokenMap: MutableMap<String, TokenGroup>
+    private lateinit var contractMappings: MutableMap<String, ContractAddress>
 
     init {
         init()
     }
 
     private fun init() {
-        if (tokenMap == null || contractMappings == null) {
+        if (!::tokenMap.isInitialized || !::contractMappings.isInitialized) {
             createMap(Utils.loadJSONFromAsset(context, TOKENS_JSON_FILENAME))
         }
     }
 
     private fun createMap(mapping: String) {
-        tokenMap = HashMap()
-        contractMappings = HashMap()
+        tokenMap = mutableMapOf()
+        contractMappings = mutableMapOf()
         val tokensMapping = Gson().fromJson<Array<TokensMapping>>(
             mapping,
             object : TypeToken<Array<TokensMapping?>?>() {
@@ -35,8 +35,8 @@ class TokensMappingRepository(private val context: Context) : TokensMappingRepos
         if (tokensMapping != null) {
             for (entry in tokensMapping) {
                 var baseAddress: ContractAddress? = null
-                for (address in entry.contracts) {
-                    tokenMap.putIfAbsent(address.addressKey, entry.group)
+                for (address in entry.contracts.orEmpty()) {
+                    tokenMap.putIfAbsent(address.addressKey, entry.getGroup())
                     if (baseAddress == null) {
                         baseAddress = address
                     } else {
@@ -50,12 +50,12 @@ class TokensMappingRepository(private val context: Context) : TokensMappingRepos
         }
     }
 
-    override fun getTokenGroup(chainId: Long, address: String, type: ContractType): TokenGroup {
-        if (tokenMap == null) init()
+    override fun getTokenGroup(chainId: Long, address: String?, type: ContractType?): TokenGroup {
+        if (!::tokenMap.isInitialized) init()
 
         var result = TokenGroup.ASSET
 
-        val g = tokenMap!![ContractAddress.toAddressKey(chainId, address)]
+        val g = tokenMap[ContractAddress.toAddressKey(chainId, address)]
         if (g != null) {
             result = g
         }
@@ -79,8 +79,9 @@ class TokensMappingRepository(private val context: Context) : TokensMappingRepos
      * @param address
      * @return
      */
-    override fun getBaseToken(chainId: Long, address: String): ContractAddress? {
-        return contractMappings!!.getOrDefault(
+    override fun getBaseToken(chainId: Long, address: String?): ContractAddress {
+        if (!::contractMappings.isInitialized) init()
+        return contractMappings.getOrDefault(
             ContractAddress.toAddressKey(chainId, address),
             ContractAddress(chainId, address)
         )

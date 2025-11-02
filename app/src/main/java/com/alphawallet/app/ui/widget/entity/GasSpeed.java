@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.alphawallet.app.entity.EIP1559FeeOracleResult;
-import com.alphawallet.app.util.BalanceUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

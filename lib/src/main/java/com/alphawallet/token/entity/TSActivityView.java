@@ -36,6 +36,6 @@ public class TSActivityView
 
     public String getActivityFilter()
     {
-        return eventOrigins.getOriginEvent().filter;
+        return eventOrigins.getOriginEvent().getFilter();
     }
 }

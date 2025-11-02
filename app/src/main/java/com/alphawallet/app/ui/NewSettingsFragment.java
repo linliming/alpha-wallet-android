@@ -373,7 +373,7 @@ public class NewSettingsFragment extends BaseFragment
 
         walletSettingsLayout.addView(walletConnectSetting, walletIndex++);
 
-        if (CustomViewSettings.getLockedChains().size() == 0)
+        if (CustomViewSettings.lockedChains.size() == 0)
             systemSettingsLayout.addView(selectNetworksSetting, systemIndex++);
 
         if (biometricsSetting != null)

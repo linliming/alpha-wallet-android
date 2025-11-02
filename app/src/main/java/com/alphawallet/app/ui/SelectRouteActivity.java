@@ -16,7 +16,6 @@ import com.alphawallet.app.R;
 import com.alphawallet.app.entity.lifi.Route;
 import com.alphawallet.app.ui.widget.adapter.RouteAdapter;
 import com.alphawallet.app.ui.widget.entity.ProgressInfo;
-import com.alphawallet.app.util.BalanceUtils;
 import com.alphawallet.app.util.SwapUtils;
 import com.alphawallet.app.viewmodel.SelectRouteViewModel;
 import com.alphawallet.app.widget.AWalletAlertDialog;

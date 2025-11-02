@@ -660,7 +660,7 @@ public class ActionSheetDialog extends ActionSheet implements StandardFunctionIn
 
                 if (rt != null)
                 {
-                    rt.setExpectedCompletion(expectedTime);
+                    rt.expectedCompletion = expectedTime;
                     r.insertOrUpdate(rt);
                 }
             });
@@ -840,13 +840,13 @@ public class ActionSheetDialog extends ActionSheet implements StandardFunctionIn
     @Override
     public void setGasEstimate(GasEstimate estimate)
     {
-        if (!TextUtils.isEmpty(estimate.getError())) // Display error
+        if (!TextUtils.isEmpty(estimate.error)) // Display error
         {
 
         }
         else
         {
-            gasWidgetInterface.setGasEstimate(estimate.getValue());
+            gasWidgetInterface.setGasEstimate(estimate.value);
             functionBar.setPrimaryButtonEnabled(true);
         }
     }

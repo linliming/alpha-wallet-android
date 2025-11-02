@@ -38,7 +38,7 @@ public class TokensMappingTest {
         String rawJson = "{\"contracts\":[{\"address\":\"abcdefg\",\"chainId\":456789}],\"group\":\"" + groupString + "\"}";
         TokensMapping tokensMapping = new Gson().fromJson(rawJson, TokensMapping.class);
 
-        ContractAddress contract = tokensMapping.getContracts().get(0);
+        ContractAddress contract = tokensMapping.contracts.get(0);
         assertThat(contract.address, equalTo("abcdefg"));
         assertThat(contract.chainId, equalTo(456789L));
 
@@ -47,7 +47,7 @@ public class TokensMappingTest {
         //Can we go back to JSON, then back again and get the same result?
         String json = new Gson().toJson(tokensMapping);
         tokensMapping = new Gson().fromJson(json, TokensMapping.class);
-        contract = tokensMapping.getContracts().get(0);
+        contract = tokensMapping.contracts.get(0);
         assertThat(contract.address, equalTo("abcdefg"));
         assertThat(contract.chainId, equalTo(456789L));
         assertThat(tokensMapping.getGroup(), equalTo(groupEnum));

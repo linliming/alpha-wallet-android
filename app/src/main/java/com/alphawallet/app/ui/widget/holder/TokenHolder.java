@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.alphawallet.app.R;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokendata.TokenGroup;
 import com.alphawallet.app.entity.tokendata.TokenTicker;
 import com.alphawallet.app.entity.tokens.Attestation;
@@ -131,7 +130,7 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
                 if (backupChain != null) token = backupChain;
             }
 
-            if (EthereumNetworkRepository.isPriorityToken(token))
+            if (EthereumNetworkRepository.isPriorityTokenCompat(token))
             {
                 extendedInfo.setVisibility(View.GONE);
             }

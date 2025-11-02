@@ -31,7 +31,6 @@ import com.alphawallet.app.ui.QRScanning.DisplayUtils;
 import com.alphawallet.app.ui.widget.entity.AmountReadyCallback;
 import com.alphawallet.app.util.KeyboardUtils;
 import com.alphawallet.app.util.QRUtils;
-import com.alphawallet.app.util.ens.AWEnsResolver;
 import com.alphawallet.app.viewmodel.MyAddressViewModel;
 import com.alphawallet.app.widget.CopyTextView;
 import com.alphawallet.app.widget.InputAmount;

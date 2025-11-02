@@ -17,7 +17,6 @@ import com.alphawallet.app.interact.FetchWalletsInteract;
 import com.alphawallet.app.repository.TokenRepository;
 import com.alphawallet.app.router.HomeRouter;
 import com.alphawallet.app.service.AlphaWalletNotificationService;
-import com.alphawallet.app.util.ens.AWEnsResolver;
 import com.alphawallet.ethereum.EthereumNetworkBase;
 
 import javax.inject.Inject;

@@ -25,10 +25,6 @@ class RealmKeyType : RealmObject() {
         this.type = type.ordinal.toByte()
     }
 
-    fun setKeyModulus(keyModulus: String?) {
-        this.keyModulus = keyModulus
-    }
-
     fun getAuthLevel(): AuthenticationLevel = AuthenticationLevel.entries.toTypedArray().get(authLevel.toInt())
 
     fun setAuthLevel(authLevel: AuthenticationLevel) {

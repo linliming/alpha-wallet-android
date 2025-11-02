@@ -239,8 +239,15 @@ public class Erc20DetailActivity extends BaseActivity implements StandardFunctio
 
         final TokenGroup group = viewModel.getTokensService().getTokenGroup(token);
         //found a new tokenscript for this token, create a new meta with balance set to trigger view update; view will update the token name
-        tokenViewAdapter.updateToken(new TokenCardMeta(token.tokenInfo.chainId, token.getAddress(), "force_update",
-                token.updateBlancaTime, token.lastTxCheck, token.getInterfaceSpec(), group));
+        tokenViewAdapter.updateToken(new TokenCardMeta(
+                token.tokenInfo.chainId,
+                token.getAddress(),
+                "force_update",
+                token.updateBlancaTime,
+                token.lastTxCheck,
+                token.getInterfaceSpec(),
+                group
+        ));
 
         setupButtons();
 

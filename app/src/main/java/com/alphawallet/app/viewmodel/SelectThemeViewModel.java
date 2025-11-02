@@ -28,12 +28,12 @@ public class SelectThemeViewModel extends BaseViewModel
 
     public int getTheme()
     {
-        return preferenceRepository.getTheme();
+        return preferenceRepository.theme;
     }
 
     public void setTheme(Context context, int theme)
     {
-        preferenceRepository.setTheme(theme);
+        preferenceRepository.theme = theme;
         updateTheme(context, theme);
     }
 

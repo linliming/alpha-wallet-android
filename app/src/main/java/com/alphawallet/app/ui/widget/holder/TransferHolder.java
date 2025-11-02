@@ -125,7 +125,7 @@ public class TransferHolder extends BinderViewHolder<TokenTransferData> implemen
         String sym = token != null ? token.getShortSymbol() : getContext().getString(R.string.eth);
         String itemView = null;
 
-        if (data.getTimeStamp() % 1000 != 0)
+        if (data.timeStamp % 1000 != 0)
         {
             findViewById(R.id.layout_background).setLabelFor(VIEW_TYPE);
         }

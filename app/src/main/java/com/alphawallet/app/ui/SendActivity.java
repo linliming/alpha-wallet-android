@@ -254,7 +254,7 @@ public class SendActivity extends BaseActivity implements AmountReadyCallback, S
                                 }
                                 else //try magiclink
                                 {
-                                    ParseMagicLink magicParser = new ParseMagicLink(new CryptoFunctions(), EthereumNetworkRepository.extraChains());
+                                    ParseMagicLink magicParser = new ParseMagicLink(new CryptoFunctions(), EthereumNetworkRepository.extraChainsCompat());
                                     try
                                     {
                                         if (magicParser.parseUniversalLink(qrCode).chainId > 0) //see if it's a valid link
@@ -583,12 +583,12 @@ public class SendActivity extends BaseActivity implements AmountReadyCallback, S
                 new Address(wallet.address),
                 ethValue,
                 sendGasPrice.toBigInteger(),
-                estimate.getValue(),
+                estimate.value,
                 -1,
                 Numeric.toHexString(transactionBytes),
                 leafCode);
 
-        if (estimate.hasError() || estimate.getValue().equals(BigInteger.ZERO))
+        if (estimate.hasError() || estimate.value.equals(BigInteger.ZERO))
         {
             estimateError(estimate, w3tx, transactionBytes, txSendAddress, resolvedAddress);
         }
@@ -700,7 +700,7 @@ public class SendActivity extends BaseActivity implements AmountReadyCallback, S
             R.string.confirm_transaction
             );
         String message = estimate.hasError() ?
-            getString(R.string.dialog_message_gas_estimation_failed, estimate.getError()) :
+            getString(R.string.dialog_message_gas_estimation_failed, estimate.error) :
             getString(R.string.error_transaction_may_fail);
         dialog.setMessage(message);
         dialog.setButtonText(R.string.action_proceed);

@@ -181,7 +181,7 @@ public class TokenScriptManagementAdapter extends RecyclerView.Adapter<TokenScri
         dialog.setTitle(tokenLocator.getFileName());
         dialog.setTextStyle(AWalletAlertDialog.TEXT_STYLE.LEFT);
         StringBuilder message = new StringBuilder();
-        message.append(context.getString(R.string.file_error, tokenLocator.getErrorMessage()));
+        message.append(context.getString(R.string.file_error, tokenLocator.errorMessage));
 
         dialog.setMessage(message);
         dialog.setButtonText(R.string.ok);

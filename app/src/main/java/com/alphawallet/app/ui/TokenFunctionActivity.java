@@ -34,7 +34,6 @@ import com.alphawallet.app.repository.entity.RealmToken;
 import com.alphawallet.app.service.GasService;
 import com.alphawallet.app.ui.widget.adapter.ActivityAdapter;
 import com.alphawallet.app.ui.widget.entity.ActionSheetCallback;
-import com.alphawallet.app.viewmodel.TokenFunctionViewModel;
 import com.alphawallet.app.web3.OnSetValuesListener;
 import com.alphawallet.app.web3.Web3TokenView;
 import com.alphawallet.app.web3.entity.PageReadyCallback;

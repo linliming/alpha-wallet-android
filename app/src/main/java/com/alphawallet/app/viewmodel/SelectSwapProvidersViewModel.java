@@ -31,7 +31,7 @@ public class SelectSwapProvidersViewModel extends BaseViewModel
 
     public Set<String> getPreferredExchanges()
     {
-        Set<String> exchanges = preferenceRepository.getSelectedSwapProviders();
+        Set<String> exchanges = preferenceRepository.selectedSwapProviders;
         if (exchanges.isEmpty())
         {
             List<SwapProvider> swapProviders = getSwapProviders();
@@ -53,7 +53,7 @@ public class SelectSwapProvidersViewModel extends BaseViewModel
 
         if (swapProviders != null)
         {
-            Set<String> preferredProviders = preferenceRepository.getSelectedSwapProviders();
+            Set<String> preferredProviders = preferenceRepository.selectedSwapProviders;
             for (SwapProvider provider : swapProviders)
             {
                 if (preferredProviders.contains(provider.key))

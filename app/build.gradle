@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.androidApplication)
     id("com.worker8.android_lint_reporter") version "2.1.0"
@@ -161,7 +160,7 @@ android {
         targetCompatibility JavaVersion.VERSION_21
         sourceCompatibility JavaVersion.VERSION_21
     }
-    
+
     kotlinOptions {
         jvmTarget = '21'
     }
@@ -214,17 +213,20 @@ tasks.register("jacocoAndroidUnitTestReport") {
     def fileFilter = ['**/R.class', '**/R$*.class', '**/*$ViewInjector*.*', '**/BuildConfig.*', '**/Manifest*.*', '**/*Realm*.*', '**/Generated*.*', '**/*_*.*']
     def debugTree = fileTree(dir: "**/", excludes: fileFilter)
     def mainSrc = "${project.projectDir}/src/main/java"
-    
+
     sourceDirectories.setFrom(files([mainSrc]))
     classDirectories.setFrom(files([debugTree]))
 }
 
 dependencies {
+    // Realm Kotlin migration support
+//    implementation "io.realm:realm-android-library:10.19.0"
+
     // Kotlin 协程
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx3:1.7.3"
-    
+
     // 架构组件
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.7.0"

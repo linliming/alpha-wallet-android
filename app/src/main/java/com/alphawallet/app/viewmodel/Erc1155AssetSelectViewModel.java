@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.alphawallet.app.C;
 import com.alphawallet.app.entity.Wallet;
-import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.interact.FetchTransactionsInteract;
 import com.alphawallet.app.service.AssetDefinitionService;

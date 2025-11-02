@@ -105,7 +105,7 @@ public class ActivityHistoryList extends LinearLayout
         List<ActivityMeta> metas = new ArrayList<>();
         for (RealmTransaction item : realmTransactions)
         {
-            TransactionMeta tm = new TransactionMeta(item.getHash(), item.getTimeStamp(), item.getTo(), item.getChainId(), item.getBlockNumber());
+            TransactionMeta tm = new TransactionMeta(item.hash, item.timeStamp, item.to, item.chainId, item.blockNumber);
             metas.add(tm);
             metas.addAll(getRelevantTransfersForHash(tm, wallet));
             if (tm.isPending) hasPending = true;
@@ -137,7 +137,7 @@ public class ActivityHistoryList extends LinearLayout
         if (transfers != null && transfers.size() > 0)
         {
             //list of transfers, descending in time to give ordered list
-            long nextTransferTime = transfers.size() == 1 ? tm.getTimeStamp() : tm.getTimeStamp() - 1; // if there's only 1 transfer, keep the transaction timestamp
+            long nextTransferTime = transfers.size() == 1 ? tm.timeStamp : tm.timeStamp - 1; // if there's only 1 transfer, keep the transaction timestamp
             for (RealmTransfer rt : transfers)
             {
                 if (rt.getTransferDetail().contains(wallet.address))
@@ -154,7 +154,7 @@ public class ActivityHistoryList extends LinearLayout
             {
                 TokenTransferData oldTf = transferData.get(0);
                 transferData.clear();
-                transferData.add(new TokenTransferData(oldTf.hash, tm.chainId, oldTf.tokenAddress, oldTf.eventName, oldTf.transferDetail, tm.getTimeStamp()));
+                transferData.add(new TokenTransferData(oldTf.hash, tm.chainId, oldTf.tokenAddress, oldTf.eventName, oldTf.transferDetail, tm.timeStamp));
             }
         }
 

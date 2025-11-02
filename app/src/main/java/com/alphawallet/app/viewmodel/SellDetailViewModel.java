@@ -74,7 +74,7 @@ public class SellDetailViewModel extends BaseViewModel {
     {
         if (parser == null)
         {
-            parser = new ParseMagicLink(new CryptoFunctions(), EthereumNetworkRepository.extraChains());
+            parser = new ParseMagicLink(new CryptoFunctions(), EthereumNetworkRepository.extraChainsCompat());
         }
     }
 

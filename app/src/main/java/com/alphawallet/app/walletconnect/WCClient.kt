@@ -1,6 +1,6 @@
-package com.alphawallet.app.walletconnect
 
 import com.alphawallet.app.C
+import com.alphawallet.app.walletconnect.WCSession
 import com.alphawallet.app.walletconnect.entity.InvalidJsonRpcParamsException
 import com.alphawallet.app.walletconnect.entity.JsonRpcError
 import com.alphawallet.app.walletconnect.entity.JsonRpcErrorResponse
@@ -20,6 +20,7 @@ import com.alphawallet.app.web3.entity.WalletAddEthereumChainObject
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.github.salomonbrys.kotson.typeToken
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonSyntaxException
@@ -30,22 +31,34 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
 import timber.log.Timber
-import java.util.Date
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
+
+interface WCClientListener {
+    fun onSessionRequest(id: Long, peer: WCPeerMeta)
+    fun onEthSign(id: Long, message: WCEthereumSignMessage)
+    fun onEthSignTransaction(id: Long, transaction: WCEthereumTransaction)
+    fun onEthSendTransaction(id: Long, transaction: WCEthereumTransaction)
+    fun onCustomRequest(id: Long, payload: String)
+    fun onGetAccounts(id: Long)
+    fun onWCOpen(peerId: String)
+    fun onPong(peerId: String)
+    fun onSwitchEthereumChain(requestId: Long, chainId: Long)
+    fun onAddEthereumChain(requestId: Long, chainObj: WalletAddEthereumChainObject)
+    fun onDisconnect(code: Int, reason: String)
+    fun onFailure(t: Throwable)
+}
 
 open class WCClient : WebSocketListener() {
 
     private val TAG = WCClient::class.java.simpleName
 
-    private val gson = GsonBuilder()
-        .serializeNulls()
-        .registerTypeAdapter(ethTransactionSerializer)
-        .create()
-
     private var socket: WebSocket? = null
+    private val nextId = AtomicLong(0)
 
     private val listeners: MutableSet<WebSocketListener> = mutableSetOf()
+    var listener: WCClientListener? = null
 
     var session: WCSession? = null
         private set
@@ -62,10 +75,7 @@ open class WCClient : WebSocketListener() {
     var isConnected: Boolean = false
         private set
 
-    fun sessionId(): String? {
-        if (session != null) return session!!.topic
-        else return null
-    }
+    fun sessionId(): String? = session?.topic
 
     var accounts: List<String>? = null
         private set
@@ -78,70 +88,62 @@ open class WCClient : WebSocketListener() {
         .writeTimeout(C.WRITE_TIMEOUT, TimeUnit.SECONDS)
         .pingInterval(C.PING_INTERVAL, TimeUnit.SECONDS)
         .retryOnConnectionFailure(true)
-        .build();
-
-    var onFailure: (Throwable) -> Unit = { _ -> Unit }
-    var onDisconnect: (code: Int, reason: String) -> Unit = { _, _ -> Unit }
-    var onSessionRequest: (id: Long, peer: WCPeerMeta) -> Unit = { _, _ -> Unit }
-    var onEthSign: (id: Long, message: WCEthereumSignMessage) -> Unit = { _, _ -> Unit }
-    var onEthSignTransaction: (id: Long, transaction: WCEthereumTransaction) -> Unit =
-        { _, _ -> Unit }
-    var onEthSendTransaction: (id: Long, transaction: WCEthereumTransaction) -> Unit =
-        { _, _ -> Unit }
-    var onCustomRequest: (id: Long, payload: String) -> Unit = { _, _ -> Unit }
-    var onGetAccounts: (id: Long) -> Unit = { _ -> Unit }
-    var onWCOpen: (peerId: String) -> Unit = { _ -> Unit }
-    var onPong: (peerId: String) -> Unit = { _ -> Unit }
-    var onSwitchEthereumChain: (requestId: Long, chainId: Long) -> Unit = { _, _ -> Unit }
-    var onAddEthereumChain: (requestId: Long, chainObj: WalletAddEthereumChainObject) -> Unit =
-        { _, _ -> }
+        .build()
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         Timber.d("<< websocket opened >>")
         isConnected = true
-
         listeners.forEach { it.onOpen(webSocket, response) }
 
-        val session =
-            this.session!!
-        val peerId =
-            this.peerId!!
-        // The Session.topic channel is used to listen session request messages only.
-        subscribe(session.topic)
-        // The peerId channel is used to listen to all messages sent to this httpClient.
-        subscribe(peerId)
+        // Safely handle session and peerId
+        val currentSession = this.session
+        val currentPeerId = this.peerId
 
-        onWCOpen(peerId)
+        if (currentSession == null || currentPeerId == null) {
+            Timber.e("onOpen called but session or peerId is null. Disconnecting.")
+            disconnect()
+            return
+        }
+
+        // The Session.topic channel is used to listen session request messages only.
+        subscribe(currentSession.topic)
+        // The peerId channel is used to listen to all messages sent to this httpClient.
+        subscribe(currentPeerId)
+
+        listener?.onWCOpen(currentPeerId)
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
-        if (text.startsWith("Missing or invalid")) { return }
+        if (text.startsWith("Missing or invalid")) {
+            return
+        }
         var decrypted: String? = null
         try {
             Timber.d("<== message $text")
             decrypted = decryptMessage(text)
-            Timber.d("<== decrypted $decrypted")
-            handleMessage(decrypted)
+            if (decrypted != null) {
+                Timber.d("<== decrypted $decrypted")
+                handleMessage(decrypted)
+            } else {
+                Timber.w("Failed to decrypt message, session key might be missing.")
+            }
         } catch (e: JsonSyntaxException) {
-            //...
+            Timber.e(e, "Error parsing JSON")
         } catch (e: Exception) {
-            onFailure(e)
+            listener?.onFailure(e)
         } finally {
             listeners.forEach { it.onMessage(webSocket, decrypted ?: text) }
         }
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        Timber.d("<< websocket closed >>")
-        //resetState()
-        onFailure(t)
-
+        Timber.e(t, "<< websocket failure >>")
+        listener?.onFailure(t)
         listeners.forEach { it.onFailure(webSocket, t, response) }
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         Timber.d("<< websocket closed >>")
-
         listeners.forEach { it.onClosed(webSocket, code, reason) }
     }
 
@@ -152,10 +154,7 @@ open class WCClient : WebSocketListener() {
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         Timber.d("<< closing socket >>")
-
-        //resetState()
-        onDisconnect(code, reason)
-
+        listener?.onDisconnect(code, reason)
         listeners.forEach { it.onClosing(webSocket, code, reason) }
     }
 
@@ -186,8 +185,10 @@ open class WCClient : WebSocketListener() {
         chainId: Long? = null,
         approved: Boolean = true
     ): Boolean {
+        // Use a reliable, unique ID for requests
+        val requestId = System.currentTimeMillis() + nextId.incrementAndGet()
         val request = JsonRpcRequest(
-            id = Date().time,
+            id = requestId,
             method = WCMethod.SESSION_UPDATE,
             params = listOf(
                 WCSessionUpdate(
@@ -205,11 +206,11 @@ open class WCClient : WebSocketListener() {
         return disconnect()
     }
 
-    private fun decryptMessage(text: String): String {
+    private fun decryptMessage(text: String): String? {
+        val currentSession = this.session ?: return null
         val message = gson.fromJson<WCSocketMessage>(text)
         val encrypted = gson.fromJson<WCEncryptionPayload>(message.payload)
-        val session = this.session!!
-        return String(WCCipher.decrypt(encrypted, session.key.toByteArray()), Charsets.UTF_8)
+        return String(WCCipher.decrypt(encrypted, currentSession.key.toByteArray()), Charsets.UTF_8)
     }
 
     private fun invalidParams(id: Long): Boolean {
@@ -232,7 +233,7 @@ open class WCClient : WebSocketListener() {
             if (method != null) {
                 handleRequest(request)
             } else {
-                onCustomRequest(request.id, payload)
+                listener?.onCustomRequest(request.id, payload)
             }
         } catch (e: InvalidJsonRpcParamsException) {
             Timber.d("handleMessage: InvalidJsonRpcParamsException")
@@ -242,6 +243,7 @@ open class WCClient : WebSocketListener() {
 
     private fun handleRequest(request: JsonRpcRequest<JsonArray>) {
         Timber.tag(TAG).d("handleRequest: %s", request.toString())
+        // TODO: Replace with listener calls based on request.method
     }
 
     private fun subscribe(topic: String): Boolean {
@@ -253,25 +255,26 @@ open class WCClient : WebSocketListener() {
         val json = gson.toJson(message)
         Timber.d("==> Subscribe: $json")
 
-        return socket?.send(gson.toJson(message)) ?: false
+        return socket?.send(json) ?: false
     }
 
     private fun encryptAndSend(result: String): Boolean {
         Timber.d("==> message $result")
-        val session = this.session!!
+        val currentSession = this.session ?: return false
+
         val payload = gson.toJson(
             WCCipher.encrypt(
                 result.toByteArray(Charsets.UTF_8),
-                session.key.toByteArray()
+                currentSession.key.toByteArray()
             )
         )
         val message = WCSocketMessage(
-            topic = remotePeerId ?: session.topic,
+            topic = remotePeerId ?: currentSession.topic,
             type = MessageType.PUB,
             payload = payload
         )
 
-        val rpId = remotePeerId ?: session.topic
+        val rpId = remotePeerId ?: currentSession.topic
         Timber.d("E&Send: $rpId")
 
         val json = gson.toJson(message)
@@ -281,5 +284,14 @@ open class WCClient : WebSocketListener() {
 
     fun disconnect(): Boolean {
         return socket?.close(1000, null) ?: false
+    }
+
+    companion object {
+        private val gson: Gson by lazy {
+            GsonBuilder()
+                .serializeNulls()
+                .registerTypeAdapter(ethTransactionSerializer)
+                .create()
+        }
     }
 }
