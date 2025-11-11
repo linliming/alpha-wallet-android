@@ -1019,7 +1019,7 @@ class AWWalletConnectClient @Inject constructor(
                 }
             }
 
-            override fun notifyConfirm(mode: String) {}
+            override fun notifyConfirm(mode: String?) {}
 
             override fun gasSelectLauncher(): ActivityResultLauncher<Intent>? = null
 

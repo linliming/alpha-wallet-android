@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.lifi.Token;
-import com.alphawallet.app.widget.AddressIcon;
 import com.alphawallet.app.widget.SelectTokenDialog;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 

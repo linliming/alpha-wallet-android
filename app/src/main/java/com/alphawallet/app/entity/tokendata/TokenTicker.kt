@@ -19,7 +19,7 @@ data class TokenTicker(
     /** 价格对应的货币符号，例如 USD、CNY */
     val priceSymbol: String = "USD",
     /** 价格信息附带的图标链接 */
-    val image: String = "",
+    val image: String? = null,
     /** 数据最近一次更新的时间戳（毫秒） */
     val updateTime: Long = 0,
 ) : Parcelable {

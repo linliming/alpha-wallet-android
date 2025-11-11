@@ -22,7 +22,6 @@ import com.alphawallet.app.ui.widget.OnAssetSelectListener;
 import com.alphawallet.app.ui.widget.adapter.Erc1155AssetSelectAdapter;
 import com.alphawallet.app.ui.widget.entity.QuantitySelectorDialogInterface;
 import com.alphawallet.app.viewmodel.Erc1155AssetSelectViewModel;
-import com.alphawallet.app.widget.FunctionButtonBar;
 import com.alphawallet.app.widget.QuantitySelectorDialog;
 import com.alphawallet.ethereum.EthereumNetworkBase;
 

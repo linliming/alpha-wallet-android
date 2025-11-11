@@ -31,10 +31,8 @@ import com.alphawallet.app.util.Utils;
 import com.alphawallet.app.viewmodel.BackupKeyViewModel;
 import com.alphawallet.app.widget.AWalletAlertDialog;
 import com.alphawallet.app.widget.CopyTextView;
-import com.alphawallet.app.widget.FunctionButtonBar;
 import com.alphawallet.app.widget.SignTransactionDialog;
 
-import org.web3j.crypto.WalletUtils;
 import org.web3j.utils.Numeric;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

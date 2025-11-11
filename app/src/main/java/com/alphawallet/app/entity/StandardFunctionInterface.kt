@@ -4,11 +4,11 @@ import com.alphawallet.token.entity.TSAction
 import java.math.BigInteger
 
 interface StandardFunctionInterface {
-    fun selectRedeemTokens(selection: List<BigInteger?>?) {}
+    fun selectRedeemTokens(selection: List<BigInteger>) {}
 
-    fun sellTicketRouter(selection: List<BigInteger?>?) {}
+    fun sellTicketRouter(selection: List<BigInteger>) {}
 
-    fun showTransferToken(selection: List<BigInteger?>?) {}
+    fun showTransferToken(selection: List<BigInteger>) {}
 
     fun showSend() {}
 

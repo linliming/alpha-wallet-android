@@ -24,7 +24,6 @@ import com.alphawallet.app.service.TickerService;
 import com.alphawallet.app.ui.widget.entity.HistoryChart;
 import com.alphawallet.app.util.TabUtils;
 import com.alphawallet.app.viewmodel.TokenInfoViewModel;
-import com.alphawallet.app.web3.Web3TokenView;
 import com.alphawallet.app.web3.entity.Address;
 import com.alphawallet.app.widget.TokenInfoCategoryView;
 import com.alphawallet.app.widget.TokenInfoHeaderView;

@@ -16,7 +16,6 @@ import com.alphawallet.app.service.TickerService;
 import com.alphawallet.app.ui.widget.entity.InputFiatCallback;
 import com.alphawallet.app.ui.widget.entity.PriceAlert;
 import com.alphawallet.app.viewmodel.SetPriceAlertViewModel;
-import com.alphawallet.app.widget.FunctionButtonBar;
 import com.alphawallet.app.widget.InputFiatView;
 import com.alphawallet.ethereum.EthereumNetworkBase;
 

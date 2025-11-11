@@ -24,17 +24,28 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
- * Kotlin 版本的 BaseViewModel
- * 将 RxJava 替换为协程，提供更好的异步操作支持
+ * Base view model that centralises coroutine helpers, error propagation, and analytics tracking.
+ * Subclasses should leverage the provided launch utilities and LiveData/StateFlow streams
+ * to expose UI state while keeping asynchronous work lifecycle-aware.
  */
 abstract class BaseViewModel : ViewModel() {
-    // 静态 LiveData 对象
+
+    /**
+     * Shared static LiveData channels used for cross-view-model UI events.
+     */
     companion object {
         protected val queueCompletion = MutableLiveData<Int>()
-        protected val pushToastMutable = MutableLiveData<String>()
+        protected val pushToastMutable = MutableLiveData<String?>()
         protected val successDialogMutable = MutableLiveData<Int>()
         protected val errorDialogMutable = MutableLiveData<Int>()
         protected val refreshTokens = MutableLiveData<Boolean>()
+
+        /**
+         * Emits a toast message to observers; pass null to clear observers.
+         */
+        fun onPushToast(message: String?) {
+            pushToastMutable.postValue(message)
+        }
     }
 
     // 实例 LiveData 对象
@@ -53,7 +64,7 @@ abstract class BaseViewModel : ViewModel() {
     val errorState: StateFlow<ErrorEnvelope?> = _errorState.asStateFlow()
 
     /**
-     * 安全启动协程
+     * Launches a coroutine tied to the view model scope with standardised lifecycle hooks.
      */
     protected fun launchSafely(
         onStart: () -> Unit = { _isLoading.value = true },
@@ -95,7 +106,7 @@ abstract class BaseViewModel : ViewModel() {
             }.also { currentJob = it }
 
     /**
-     * 网络调用包装器
+     * Executes the supplied suspending API call and wraps the outcome in a [Result].
      */
     protected suspend fun <T> safeApiCall(apiCall: suspend () -> T): Result<T> =
         try {
@@ -105,7 +116,7 @@ abstract class BaseViewModel : ViewModel() {
         }
 
     /**
-     * 取消当前协程
+     * Cancels the currently active job launched by [launchSafely] or [launchIO].
      */
     protected fun cancelCurrentJob() {
         currentJob?.cancel()
@@ -113,35 +124,47 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 清理资源
+     * Cancels outstanding work when the view model is cleared.
      */
     override fun onCleared() {
         super.onCleared()
         cancelCurrentJob()
     }
 
-    // 静态方法
+    /**
+     * Emits progress values for queued work.
+     */
     fun onQueueUpdate(complete: Int) {
         queueCompletion.postValue(complete)
     }
 
-    fun onPushToast(message: String) {
-        pushToastMutable.postValue(message)
-    }
-
-    // LiveData 访问方法
+    /**
+     * Exposes the latest error envelope for UI consumption.
+     */
     fun error(): LiveData<ErrorEnvelope?> = error
 
+    /**
+     * Exposes progress state as LiveData.
+     */
     fun progress(): LiveData<Boolean> = progress
 
+    /**
+     * Exposes queue completion events.
+     */
     fun queueProgress(): LiveData<Int> = queueCompletion
 
-    fun pushToast(): LiveData<String> = pushToastMutable
+    /**
+     * Exposes toast events as LiveData.
+     */
+    fun pushToast(): LiveData<String?> = pushToastMutable
 
+    /**
+     * Exposes refresh events for token lists.
+     */
     fun refreshTokens(): LiveData<Boolean> = refreshTokens
 
     /**
-     * 错误处理
+     * Standardises error handling by logging, mapping, and publishing envelopes.
      */
     protected fun handleError(throwable: Throwable) {
         Timber.e(throwable)
@@ -164,7 +187,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 清除错误状态
+     * Clears the current error state from both LiveData and StateFlow.
      */
     fun clearError() {
         error.value = null
@@ -172,7 +195,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 显示发送代币界面
+     * Hook for launching the send-token experience; override where relevant.
      */
     open fun showSendToken(
         context: Context,
@@ -185,7 +208,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 显示代币列表
+     * Hook for presenting a token list; override in subclasses as required.
      */
     open fun showTokenList(
         activity: Activity,
@@ -195,7 +218,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 显示 ERC20 代币详情
+     * Hook for presenting ERC20 token details; override when needed.
      */
     open fun showErc20TokenDetail(
         context: Activity,
@@ -208,28 +231,28 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 设置分析服务
+     * Assigns an analytics service instance used by the tracking helpers.
      */
     protected fun setAnalyticsService(analyticsService: AnalyticsServiceType<AnalyticsProperties>?) {
         this.analyticsService = analyticsService
     }
 
     /**
-     * 用户识别
+     * Associates the current user with analytics tracking.
      */
     fun identify(uuid: String) {
         analyticsService?.identify(uuid)
     }
 
     /**
-     * 跟踪导航事件
+     * Tracks a navigation event.
      */
     fun track(event: Analytics.Navigation) {
         trackEvent(event.value)
     }
 
     /**
-     * 跟踪带属性的导航事件
+     * Tracks a navigation event with custom properties.
      */
     fun track(
         event: Analytics.Navigation,
@@ -239,14 +262,14 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 跟踪操作事件
+     * Tracks an action event.
      */
     fun track(event: Analytics.Action) {
         trackEvent(event.value)
     }
 
     /**
-     * 跟踪带属性的操作事件
+     * Tracks an action event with custom properties.
      */
     fun track(
         event: Analytics.Action,
@@ -256,7 +279,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 跟踪错误事件
+     * Tracks an error event with the provided message.
      */
     fun trackError(
         source: Analytics.Error,
@@ -270,14 +293,14 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 跟踪事件
+     * Internal helper for event tracking without properties.
      */
     private fun trackEvent(event: String) {
         analyticsService?.track(event)
     }
 
     /**
-     * 跟踪带属性的事件
+     * Internal helper for event tracking with properties.
      */
     private fun trackEventWithProps(
         event: String,
@@ -287,7 +310,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 扩展函数：在 IO 线程执行并返回结果
+     * Runs the supplied block on the IO dispatcher and returns its result.
      */
     protected suspend fun <T> withIO(block: suspend () -> T): T =
         withContext(Dispatchers.IO) {
@@ -295,7 +318,7 @@ abstract class BaseViewModel : ViewModel() {
         }
 
     /**
-     * 扩展函数：在主线程执行
+     * Runs the supplied block on the main dispatcher.
      */
     protected suspend fun withMain(block: suspend () -> Unit) {
         withContext(Dispatchers.Main) {
@@ -304,7 +327,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
-     * 扩展函数：延迟执行
+     * Suspends execution for the requested duration.
      */
     protected suspend fun delay(millis: Long) {
         kotlinx.coroutines.delay(millis)

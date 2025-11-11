@@ -7,6 +7,7 @@ import com.alphawallet.app.entity.EIP1559FeeOracleResult
 import com.alphawallet.app.entity.FeeHistory
 import com.alphawallet.app.entity.GasEstimate
 import com.alphawallet.app.entity.GasPriceSpread
+import com.alphawallet.app.entity.TXSpeed
 import com.alphawallet.app.entity.Wallet
 import com.alphawallet.app.entity.suggestEIP1559
 import com.alphawallet.app.entity.tokens.Token
@@ -391,6 +392,32 @@ class GasService(
         } catch (e: Exception) {
             Timber.e(e, "更新 EIP-1559 Realm 数据失败")
             false
+        }
+    }
+
+    /**
+     * 拉取最新 Gas 价格（保留 RxSingle 以兼容旧代码）
+     */
+    fun fetchGasPrice(chainId: Long, use1559Gas: Boolean): Single<EIP1559FeeOracleResult> =
+        singleFrom { fetchGasPriceSuspend(chainId, use1559Gas) }
+
+    /**
+     * 协程版本的 Gas 价格获取接口
+     */
+    suspend fun fetchGasPriceSuspend(chainId: Long, use1559Gas: Boolean): EIP1559FeeOracleResult {
+        updateChainId(chainId)
+        return if (use1559Gas) {
+            val result = getEIP1559FeeStructure(chainId)
+            val standard = result?.get(TXSpeed.STANDARD.ordinal)
+            if (standard != null) {
+                standard
+            } else {
+                val gasPrice = getNodeEstimate(chainId)
+                EIP1559FeeOracleResult(BigInteger.ZERO, BigInteger.ZERO, gasPrice.gasPrice)
+            }
+        } else {
+            val gasPrice = getNodeEstimate(chainId)
+            EIP1559FeeOracleResult(gasPrice.gasPrice, BigInteger.ZERO, BigInteger.ZERO)
         }
     }
 

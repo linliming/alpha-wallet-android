@@ -8,9 +8,9 @@ import com.alphawallet.hardware.SignatureFromKey
  * Created by JB on 2/02/2023.
  */
 interface TransactionSendHandlerInterface {
-    fun transactionFinalised(txData: TransactionReturn?)
+    fun transactionFinalised(txData: TransactionReturn)
 
-    fun transactionError(txError: TransactionReturn?)
+    fun transactionError(txError: TransactionReturn)
 
     fun transactionSigned(sigData: SignatureFromKey?, w3Tx: Web3Transaction?) {
     } //Not always required, only WalletConnect

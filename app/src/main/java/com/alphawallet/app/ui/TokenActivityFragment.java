@@ -16,7 +16,6 @@ import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.ui.widget.adapter.ActivityAdapter;
 import com.alphawallet.app.viewmodel.TokenActivityViewModel;
-import com.alphawallet.app.widget.ActivityHistoryList;
 import com.alphawallet.ethereum.EthereumNetworkBase;
 
 import dagger.hilt.android.AndroidEntryPoint;

@@ -14,7 +14,6 @@ import com.alphawallet.app.R;
 import com.alphawallet.app.ui.widget.OnSetWatchWalletListener;
 import com.alphawallet.app.ui.widget.entity.AddressReadyCallback;
 import com.alphawallet.app.util.KeyboardUtils;
-import com.alphawallet.app.widget.InputAddress;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

@@ -19,7 +19,6 @@ import com.alphawallet.app.ui.widget.entity.ProgressInfo;
 import com.alphawallet.app.util.SwapUtils;
 import com.alphawallet.app.viewmodel.SelectRouteViewModel;
 import com.alphawallet.app.widget.AWalletAlertDialog;
-import com.alphawallet.app.widget.AddressIcon;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;

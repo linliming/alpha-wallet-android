@@ -195,6 +195,7 @@ class TokenFunctionViewModel @Inject constructor(
      * 获取资产定义服务
      */
     fun getAssetDefinitionService(): AssetDefinitionService = assetDefinitionService
+    fun getOpenseaService(): OpenSeaService = openseaService
 
     /**
      * 检查代币脚本有效性
@@ -479,8 +480,8 @@ class TokenFunctionViewModel @Inject constructor(
     /**
      * 交易错误
      */
-    override fun transactionError(rtn: TransactionReturn) {
-        _transactionError.postValue(rtn)
+    override fun transactionError(txError: TransactionReturn) {
+        _transactionError.postValue(txError)
     }
 
     /**
@@ -698,11 +699,11 @@ class TokenFunctionViewModel @Inject constructor(
                 val osAsset = Gson().fromJson(assetJson.toString(), OpenSeaAsset::class.java)
                 val asset = NFTAsset(result)
                 
-                if (!TextUtils.isEmpty(asset.image)) {
+                if (!TextUtils.isEmpty(asset.getImage())) {
                     loadedFromApi = true
 
                     // 如果有slug可用，检查更多集合数据
-                    if (osAsset.collection != null && !TextUtils.isEmpty(osAsset.collection.slug)) {
+                    if (osAsset.collection != null && !TextUtils.isEmpty(osAsset.collection?.slug.toString())) {
                         getCollection(token, tokenId, asset, osAsset)
                     } else {
                         storeAsset(token, tokenId, asset, oldAsset)
@@ -770,7 +771,7 @@ class TokenFunctionViewModel @Inject constructor(
     fun getCollection(token: Token, tokenId: BigInteger, asset: NFTAsset, osAsset: OpenSeaAsset) {
         viewModelScope.launch {
             try {
-                val result = openseaService.getCollection(token, osAsset.collection.slug)
+                val result = openseaService.getCollection(token, osAsset.collection?.slug.toString())
                 onCollection(token, tokenId, asset, osAsset, result)
             } catch (e: Exception) {
                 onAssetError(e)
@@ -878,8 +879,8 @@ class TokenFunctionViewModel @Inject constructor(
     fun addAttestationAttrs(asset: NFTAsset?, token: Token, action: TSAction): String {
         val attrs = StringBuilder()
         
-        if (asset?.isAttestation == true) {
-            val attestationAttrs = assetDefinitionService.getAttestationAttrs(token, action, asset.attestationID)
+        if (asset?.isAttestation() == true) {
+            val attestationAttrs = assetDefinitionService.getAttestationAttrs(token, action, asset.getAttestationID())
             attestationAttrs?.forEach { attr ->
                 onAttr(attrs, attr)
             }

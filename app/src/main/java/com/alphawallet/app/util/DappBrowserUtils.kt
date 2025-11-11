@@ -52,8 +52,8 @@ object DappBrowserUtils {
      * 读取用户收藏的 DApp，自动合并默认站点。
      */
     @JvmStatic
-    fun getMyDapps(context: Context?): List<DApp> {
-        if (context == null) return emptyList()
+    fun getMyDapps(context: Context?): MutableList<DApp> {
+        if (context == null) return mutableListOf()
         var json = loadJsonData(MY_DAPPS_FILE, context)
         if (json.isEmpty()) {
             json = loadFromPrefsLegacy(context, "my_dapps", MY_DAPPS_FILE).orEmpty()
@@ -78,8 +78,8 @@ object DappBrowserUtils {
      * 获取浏览历史记录，并自动清理非法 URL。
      */
     @JvmStatic
-    fun getBrowserHistory(context: Context?): List<DApp> {
-        if (context == null) return emptyList()
+    fun getBrowserHistory(context: Context?): MutableList<DApp> {
+        if (context == null) return emptyList<DApp>().toMutableList()
         var historyJson = loadJsonData(DAPPS_HISTORY_FILE, context)
         if (historyJson.isEmpty()) {
             blankPrefEntry(context, C.DAPP_BROWSER_HISTORY)

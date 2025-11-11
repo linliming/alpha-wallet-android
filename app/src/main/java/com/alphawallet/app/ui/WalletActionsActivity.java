@@ -35,8 +35,6 @@ import com.alphawallet.app.ui.widget.entity.AddressReadyCallback;
 import com.alphawallet.app.util.Utils;
 import com.alphawallet.app.viewmodel.WalletActionsViewModel;
 import com.alphawallet.app.widget.AWalletAlertDialog;
-import com.alphawallet.app.widget.FunctionButtonBar;
-import com.alphawallet.app.widget.InputAddress;
 import com.alphawallet.app.widget.InputView;
 import com.alphawallet.app.widget.SettingsItemView;
 import com.alphawallet.app.widget.UserAvatar;

@@ -14,7 +14,6 @@ import com.alphawallet.app.R;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.service.AssetDefinitionService;
 import com.alphawallet.app.ui.widget.TokensAdapterCallback;
-import com.alphawallet.app.web3.Web3TokenView;
 import com.alphawallet.app.web3.entity.PageReadyCallback;
 import com.alphawallet.token.entity.TicketRange;
 import com.alphawallet.token.entity.ViewType;

@@ -1,6 +1,6 @@
 package com.alphawallet.app.walletconnect
 
-import android.net.Uri
+import androidx.core.net.toUri
 
 data class WCSession(
         val topic: String,
@@ -13,7 +13,7 @@ data class WCSession(
             if (!from.startsWith("wc:")) return null
 
             val uriString = from.replace("wc:", "wc://")
-            val uri = Uri.parse(uriString)
+            val uri = uriString.toUri()
             val bridge = uri.getQueryParameter("bridge")
             val key = uri.getQueryParameter("key")
             val topic = uri.userInfo

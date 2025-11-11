@@ -33,7 +33,6 @@ import com.alphawallet.app.util.KeyboardUtils;
 import com.alphawallet.app.util.QRUtils;
 import com.alphawallet.app.viewmodel.MyAddressViewModel;
 import com.alphawallet.app.widget.CopyTextView;
-import com.alphawallet.app.widget.InputAmount;
 import com.alphawallet.ethereum.EthereumNetworkBase;
 
 import org.web3j.crypto.Keys;

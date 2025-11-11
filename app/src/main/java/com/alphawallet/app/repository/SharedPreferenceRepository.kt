@@ -57,7 +57,7 @@ class SharedPreferenceRepository @Inject constructor(
         
         // 功能开关常量
         private const val DEFAULT_SET_KEY = "default_net_set"
-        private const val EXPERIMENTAL_1559_TX = "ex_1559_tx"
+        const val EXPERIMENTAL_1559_TX = "ex_1559_tx"
         private const val USE_TOKENSCRIPT_VIEWER = "use_ts_viewer"
         private const val DEVELOPER_OVERRIDE = "developer_override"
         private const val TESTNET_ENABLED = "testnet_enabled"

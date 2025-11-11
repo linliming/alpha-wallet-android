@@ -34,8 +34,6 @@ import com.alphawallet.app.ui.widget.entity.NFTAttributeLayout;
 import com.alphawallet.app.util.KittyUtils;
 import com.alphawallet.app.web3.entity.Web3Transaction;
 import com.alphawallet.app.widget.AWalletAlertDialog;
-import com.alphawallet.app.widget.ActionSheetDialog;
-import com.alphawallet.app.widget.FunctionButtonBar;
 import com.alphawallet.app.widget.NFTImageView;
 import com.alphawallet.ethereum.EthereumNetworkBase;
 import com.alphawallet.hardware.SignatureFromKey;

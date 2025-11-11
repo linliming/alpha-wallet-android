@@ -14,11 +14,11 @@ import java.util.UUID
  */
 class
 TransactionMeta(
-    hash: String,
+    hash: String?,
     timeStamp: Long,
-    @JvmField val contractAddress: String,
+    @JvmField val contractAddress: String?,
     @JvmField val chainId: Long,
-    blockNumber: String
+    blockNumber: String?
 ) :
     ActivityMeta(timeStamp, hash) {
     @JvmField

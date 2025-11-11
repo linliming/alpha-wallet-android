@@ -13,7 +13,6 @@ import com.alphawallet.app.R;
 import com.alphawallet.app.entity.lifi.Route;
 import com.alphawallet.app.ui.widget.entity.OnRouteSelectedListener;
 import com.alphawallet.app.util.SwapUtils;
-import com.alphawallet.app.widget.AddressIcon;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;

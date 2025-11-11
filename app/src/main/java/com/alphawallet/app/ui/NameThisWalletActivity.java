@@ -13,7 +13,6 @@ import com.alphawallet.app.analytics.Analytics;
 import com.alphawallet.app.entity.StandardFunctionInterface;
 import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.viewmodel.NameThisWalletViewModel;
-import com.alphawallet.app.widget.FunctionButtonBar;
 import com.alphawallet.app.widget.InputView;
 
 import java.util.ArrayList;

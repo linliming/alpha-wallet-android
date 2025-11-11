@@ -5,14 +5,14 @@ package com.alphawallet.app.entity
  */
 open class ActivityMeta {
     val timeStamp: Long
-    val hash: String
+    val hash: String?
 
-    constructor(ts: Long, txHash: String) {
+    constructor(ts: Long, txHash: String?) {
         timeStamp = ts * 1000
         hash = txHash
     }
 
-    constructor(ts: Long, txHash: String, tokenTransfer: Boolean) {
+    constructor(ts: Long, txHash: String?, tokenTransfer: Boolean) {
         timeStamp = ts
         hash = txHash
     }

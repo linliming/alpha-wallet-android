@@ -218,8 +218,8 @@ class Web3Transaction : Parcelable {
         )
         this.gasPrice = Hex.hexToBigInteger(gasPrice, BigInteger.ZERO)
         this.gasLimit = Hex.hexToBigInteger(gasLimit, BigInteger.ZERO)
-        this.maxFeePerGas = Hex.hexToBigInteger(wcTx.maxFeePerGas, BigInteger.ZERO)
-        this.maxPriorityFeePerGas = Hex.hexToBigInteger(wcTx.maxPriorityFeePerGas, BigInteger.ZERO)
+        this.maxFeePerGas = wcTx.maxFeePerGas?.let { Hex.hexToBigInteger(it, BigInteger.ZERO) }
+        this.maxPriorityFeePerGas = wcTx.maxPriorityFeePerGas?.let { Hex.hexToBigInteger(it, BigInteger.ZERO) }
         this.nonce = Hex.hexToLong(nonce, -1)
         this.payload = wcTx.data
         this.leafPosition = callbackId

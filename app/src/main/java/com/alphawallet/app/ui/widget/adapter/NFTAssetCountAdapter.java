@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alphawallet.app.entity.nftassets.NFTAsset;
 import com.alphawallet.app.ui.widget.holder.NFTAssetAmountHolder;
 
 import org.jetbrains.annotations.NotNull;

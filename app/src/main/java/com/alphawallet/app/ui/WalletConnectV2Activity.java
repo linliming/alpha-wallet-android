@@ -35,7 +35,6 @@ import com.alphawallet.app.viewmodel.NetworkToggleViewModel;
 import com.alphawallet.app.viewmodel.WalletConnectV2ViewModel;
 import com.alphawallet.app.walletconnect.AWWalletConnectClient;
 import com.alphawallet.app.widget.AWalletAlertDialog;
-import com.alphawallet.app.widget.FunctionButtonBar;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;

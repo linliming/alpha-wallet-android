@@ -41,7 +41,6 @@ import com.alphawallet.app.viewmodel.SwapViewModel;
 import com.alphawallet.app.viewmodel.Tokens;
 import com.alphawallet.app.web3.entity.Web3Transaction;
 import com.alphawallet.app.widget.AWalletAlertDialog;
-import com.alphawallet.app.widget.ActionSheetDialog;
 import com.alphawallet.app.widget.SelectTokenDialog;
 import com.alphawallet.app.widget.StandardHeader;
 import com.alphawallet.app.widget.SwapSettingsDialog;

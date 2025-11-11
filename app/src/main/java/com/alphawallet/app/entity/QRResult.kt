@@ -1,3 +1,4 @@
+
 package com.alphawallet.app.entity
 
 import android.os.Parcel
@@ -8,12 +9,16 @@ import java.math.BigDecimal
 import java.math.BigInteger
 
 /**
- * Represents the parsed payload of a QR scan (addresses, EIP-681 requests, attestations, etc.).
+ * Merepresentasikan payload yang telah di-parse dari hasil pindaian QR (alamat, EIP-681, atestasi, dll.).
+ *
+ * Kelas ini telah dimutakhirkan untuk menggunakan properti Kotlin (val/var) alih-alih metode get/set ala Java.
  */
 class QRResult() : Parcelable {
-    private var protocol: String = ""
-    private var address: String? = null
-    private var functionStr: String = ""
+    // 1. Properti privat (private var) yang sebelumnya memiliki get/set kini menjadi 'var' publik.
+    // Ini menggantikan getProtocol(), getFunction(), setFunction(), dll.
+    var protocol: String = ""
+    var address: String? = null
+    var function: String = "" // Menggantikan 'functionStr'
 
     @JvmField
     var chainId: Long = DEFAULT_CHAIN_ID
@@ -37,10 +42,17 @@ class QRResult() : Parcelable {
     var functionToAddress: String = ""
 
     @JvmField
-    var function: String? = null
-
-    @JvmField
     var type: EIP681Type = EIP681Type.ADDRESS
+
+    // 2. Properti terkomputasi (computed property) untuk 'attestation'.
+    // Ini adalah implementasi langsung dari contoh Anda (val ... get() = ...).
+    // Ini menggantikan metode getAttestation()
+    val attestation: String
+        get() = if (type == EIP681Type.ATTESTATION || type == EIP681Type.EAS_ATTESTATION) {
+            functionDetail
+        } else {
+            ""
+        }
 
     init {
         resetDefaults()
@@ -84,7 +96,7 @@ class QRResult() : Parcelable {
         protocol = parcel.readString().orEmpty()
         address = parcel.readString()
         chainId = parcel.readLong()
-        functionStr = parcel.readString().orEmpty()
+        function = parcel.readString().orEmpty() // Menggunakan 'function'
         functionDetail = parcel.readString().orEmpty()
         gasLimit = parcel.readString()?.let { BigInteger(it, HEX_RADIX) } ?: BigInteger.ZERO
         gasPrice = parcel.readString()?.let { BigInteger(it, HEX_RADIX) } ?: BigInteger.ZERO
@@ -96,57 +108,13 @@ class QRResult() : Parcelable {
         type = if (resultType in types.indices) types[resultType] else EIP681Type.OTHER
     }
 
-    /**
-     * Returns the protocol prefix extracted from the QR payload (eg. `ethereum`).
-     */
-    fun getProtocol(): String = protocol
+    // 3. Metode get...() dan set...() yang sederhana telah dihapus
+    // karena properti publik (var) sudah menggantikannya.
+    // Contoh: alih-alih memanggil 'qrResult.getAddress()', Anda kini memanggil 'qrResult.address'
+    // Alih-alih 'qrResult.setAddress("...")', Anda kini melakukan 'qrResult.address = "..."'
 
     /**
-     * Returns the primary address or data element carried by the QR payload.
-     */
-    fun getAddress(): String? = address
-
-    /**
-     * Overrides the stored address or data element for downstream processing.
-     */
-    fun setAddress(address: String) {
-        this.address = address
-    }
-
-    /**
-     * Returns the textual function signature (eg. `transfer`) parsed from the payload.
-     */
-    fun getFunction(): String = functionStr
-
-    /**
-     * Stores the textual function signature that should be associated with the payload.
-     */
-    fun setFunction(function: String) {
-        functionStr = function
-    }
-
-    /**
-     * Returns a human-readable description of the function arguments captured from the payload.
-     */
-    fun getFunctionDetail(): String = functionDetail
-
-    /**
-     * Returns the requested wei value associated with the payload (defaults to zero).
-     */
-    fun getValue(): BigInteger = weiValue
-
-    /**
-     * Returns the requested gas price parsed from the payload (defaults to zero).
-     */
-    fun getGasPrice(): BigInteger = gasPrice
-
-    /**
-     * Returns the requested gas limit parsed from the payload (defaults to zero).
-     */
-    fun getGasLimit(): BigInteger = gasLimit
-
-    /**
-     * Builds the function prototype and updates type inference based on the supplied parameters.
+     * Membangun prototipe fungsi dan memperbarui tipe berdasarkan parameter yang diberikan.
      */
     fun createFunctionPrototype(params: List<EthTypeParam>) {
         var override = false
@@ -154,8 +122,8 @@ class QRResult() : Parcelable {
         val signatureBuilder = StringBuilder()
         val detailBuilder = StringBuilder()
 
-        if (functionStr.isNotEmpty()) {
-            signatureBuilder.append(functionStr)
+        if (function.isNotEmpty()) { // Menggunakan 'function'
+            signatureBuilder.append(function)
         } else {
             when {
                 params.isNotEmpty() && isEip681() -> {
@@ -212,7 +180,7 @@ class QRResult() : Parcelable {
         signatureBuilder.append(")")
         detailBuilder.append(")")
 
-        functionStr = signatureBuilder.toString()
+        function = signatureBuilder.toString() // Menggunakan 'function'
         functionDetail = detailBuilder.toString()
 
         if (functionDetail.isNotEmpty() && functionDetail == "()") {
@@ -220,7 +188,7 @@ class QRResult() : Parcelable {
         }
 
         if (!override && isEip681()) {
-            type = if (functionStr.startsWith("transfer")) {
+            type = if (function.startsWith("transfer")) { // Menggunakan 'function'
                 EIP681Type.TRANSFER
             } else {
                 EIP681Type.FUNCTION_CALL
@@ -232,37 +200,22 @@ class QRResult() : Parcelable {
         }
     }
 
-    /**
-     * Stores an attestation payload for later processing or persistence.
-     */
-    fun setAttestation(attestation: String) {
-        functionDetail = attestation
-    }
+    // 4. Metode setAttestation() dihapus karena properti 'functionDetail' sudah publik (var)
+    // dan dapat diatur langsung: qrResult.functionDetail = "..."
 
     /**
-     * Returns the attestation payload when available, otherwise an empty string.
-     */
-    fun getAttestation(): String {
-        return if (type == EIP681Type.ATTESTATION || type == EIP681Type.EAS_ATTESTATION) {
-            functionDetail
-        } else {
-            ""
-        }
-    }
-
-    /**
-     * Parcelable contract – no special file descriptors are required.
+     * Parcelable contract – tidak ada deskriptor file khusus yang diperlukan.
      */
     override fun describeContents(): Int = 0
 
     /**
-     * Serialises the object so it can be passed between Android components.
+     * Serialisasi objek sehingga dapat dikirim antar komponen Android.
      */
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(protocol)
         parcel.writeString(address)
         parcel.writeLong(chainId)
-        parcel.writeString(functionStr)
+        parcel.writeString(function) // Menggunakan 'function'
         parcel.writeString(functionDetail)
         parcel.writeString(gasLimit.toString(HEX_RADIX))
         parcel.writeString(gasPrice.toString(HEX_RADIX))
@@ -275,7 +228,7 @@ class QRResult() : Parcelable {
     private fun resetDefaults() {
         protocol = ""
         address = null
-        functionStr = ""
+        function = "" // Menggunakan 'function'
         chainId = DEFAULT_CHAIN_ID
         type = EIP681Type.ADDRESS
         functionDetail = ""
@@ -284,26 +237,18 @@ class QRResult() : Parcelable {
         gasLimit = BigInteger.ZERO
         gasPrice = BigInteger.ZERO
         weiValue = BigInteger.ZERO
-        function = null
+        // Hapus 'function = null' yang lama
     }
 
     private fun isEip681(): Boolean {
         return protocol.equals(PROTOCOL_ETHEREUM, ignoreCase = true)
     }
 
-    object QRType {
-        @JvmField val ADDRESS: EIP681Type = EIP681Type.ADDRESS
-        @JvmField val PAYMENT: EIP681Type = EIP681Type.PAYMENT
-        @JvmField val TRANSFER: EIP681Type = EIP681Type.TRANSFER
-        @JvmField val FUNCTION_CALL: EIP681Type = EIP681Type.FUNCTION_CALL
-        @JvmField val URL: EIP681Type = EIP681Type.URL
-        @JvmField val MAGIC_LINK: EIP681Type = EIP681Type.MAGIC_LINK
-        @JvmField val OTHER_PROTOCOL: EIP681Type = EIP681Type.OTHER_PROTOCOL
-        @JvmField val WALLET_CONNECT: EIP681Type = EIP681Type.WALLET_CONNECT
-        @JvmField val ATTESTATION: EIP681Type = EIP681Type.ATTESTATION
-        @JvmField val OTHER: EIP681Type = EIP681Type.OTHER
-        @JvmField val EAS_ATTESTATION: EIP681Type = EIP681Type.EAS_ATTESTATION
-    }
+    // 5. Menghapus 'object QRType'.
+    // Ini adalah pola Java-style yang tidak diperlukan di Kotlin.
+    // Alih-alih memanggil 'QRResult.QRType.ADDRESS',
+    // Anda seharusnya langsung memanggil 'EIP681Type.ADDRESS'.
+    // Menghapus 'QRType' membuat API lebih bersih.
 
     companion object {
         private const val HEX_RADIX = 16

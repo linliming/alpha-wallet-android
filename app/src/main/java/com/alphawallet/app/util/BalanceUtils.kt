@@ -241,6 +241,7 @@ object BalanceUtils {
      * @param decimals 小数位数
      * @return 基础单位数量
      */
+    @JvmStatic
     fun subunitToBase(subunitAmount: BigInteger, decimals: Int): BigDecimal {
         val divisor = BigDecimal.TEN.pow(decimals)
         return BigDecimal(subunitAmount).divide(divisor, decimals, RoundingMode.DOWN)

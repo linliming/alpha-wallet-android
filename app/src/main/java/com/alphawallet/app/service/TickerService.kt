@@ -183,12 +183,27 @@ class TickerService
             fun getCurrencySymbolTxt(): String = currentCurrencySymbolTxt
 
             @Volatile private var currentCurrencySymbolTxt: String = ""
+            @Volatile private var currentCurrencySymbol: String = ""
+            /**
+             * 以“金额 + 货币代码”形式返回价格字符串，适合列表等展示场景。
+             */
+            fun getFullCurrencyString(price: Double): String = getCurrencyString(price) + " " + currentCurrencySymbolTxt
+
+            /**
+             * 返回当前货币的符号，例如 ¥、$。
+             */
+            fun getCurrencySymbol(): String = currentCurrencySymbol
+
+            /**
+             * 根据当前本地化设置，格式化并返回带货币符号的金额字符串。
+             */
+            fun getCurrencyString(price: Double): String = BalanceUtils.genCurrencyString(price, currentCurrencySymbol)
         }
 
         private val keyProvider: KeyProvider = KeyProviderFactory.get()
         private val ethTickers = ConcurrentHashMap<Long?, TokenTicker?>()
         private var currentConversionRate = 0.0
-        private var currentCurrencySymbol: String = ""
+
 
         private val tokenCheckQueue = ConcurrentLinkedDeque<TokenCardMeta>()
         private val secondaryCheckQueue = ConcurrentLinkedDeque<ContractAddress>()
@@ -765,6 +780,7 @@ class TickerService
         /**
          * 根据当前本地化设置，格式化并返回带货币符号的金额字符串。
          */
+
 
         fun getCurrencyString(price: Double): String = BalanceUtils.genCurrencyString(price, currentCurrencySymbol)
 
